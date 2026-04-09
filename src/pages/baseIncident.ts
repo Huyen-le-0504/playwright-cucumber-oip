@@ -5,7 +5,7 @@ import * as dotenv from "dotenv";
 
 dotenv.config(); // Load biến môi trường từ .env
 
-export class BaseDashboard {
+export class BaseIncident {
     static selectTenant(tenantName: string) {
         throw new Error("Method not implemented.");
     }
@@ -22,14 +22,15 @@ export class BaseDashboard {
     menuItem = (item: string) => this.page.locator(`xpath=(//ul[@role="menu"]//li[@role="menuitem"]//span[contains(text(),"${item}")])`);
     btnByText = (text: string) => this.page.locator(`xpath=(//button[@type="submit" and normalize-space()="${text}"])`);
     txtGeneralInputField = (name: string) => this.page.locator(`xpath=//input[@name='${name}']`);
-    selectById = (id: string) => this.page.locator(`select#${id}`);
-    optionByText = (selectId: string, optionText: string) => this.page.locator(`xpath=//select[@id='${selectId}']/option[normalize-space()='${optionText}']`);
-    linkByText = (text: string) => this.page.locator(`xpath=(//a[normalize-space(text())="${text}"])`);
-    btnByflag = (text: string) => this.page.locator(`xpath=(//button[@type="button" and @role="combobox" and @aria-controls="radix-:rdjq:"])`);
     btnBytenant = (tenant: string) => this.page.locator(`xpath=(.//div[@role="option" and .//span[text()='${tenant}']])`);
     btncombobox = (name: string) => this.page.locator(`xpath=(//button[@type="button" and @role="combobox"]//span[@style="pointer-events: none;"]//div[@class="flex items-center gap-2 pr-2"])`);
-    btnSelectFilter = (filtername: string) => this.page.locator(`xpath=(//div[@role="presentation"]//div[@role="option" and @tabindex="-1"]//span[@id="radix-:r366:" and normalize-space()="${filtername}"])`);
-    btnfilter = (nameoffilter: String) => this.page.locator(`xpath=(//div[@class="space-y-2"]//button[@type="button" and @role="combobox"])`);
+    tabmenu = (tab: string) => this.page.locator(`xpath=(//p[normalize-space()="${tab}"])`);
+    timerange = (timerange: string) => this.page.locator(`xpath=((//button[normalize-space()="${timerange}" and not(contains(@class,"hidden"))])[1])`);
+    customrange = (customrange: string) => this.page.locator(`xpath=(//div[@class="flex flex-1 flex-row items-center gap-2"]//button[@type="button"]//div[normalize-space()="Custom range"])`);
+    datePicker = () => this.page.locator('//*[@data-testid="date-range-picker-custom"]');
+    startCalendar = () => this.page.locator('(//*[@data-testid="date-range-picker-custom"]//div[contains(@class,"calendar-section")])[1]');
+    endCalendar = () => this.page.locator('(//*[@data-testid="date-range-picker-custom"]//div[contains(@class,"calendar-section")])[2]');
+    saveButton = () => this.page.locator('//button[.//text()="Save"]');
     //#endregion
 
     //#region Actions
@@ -47,19 +48,6 @@ export class BaseDashboard {
         await expect(this.page.getByText(text)).toBeVisible();
     }
 
-    async clickDropdown(text: string) {
-        const dropdown = this.btnByflag(text);
-        await dropdown.waitFor({ state: "visible" });
-        await dropdown.click();
-    }
-
-    async selectDropdownByText(selectId: string, optionText: string | null): Promise<void> {
-        if (!optionText) return;
-        const select = this.page.locator(`select#${selectId}`);
-        await select.waitFor({ state: "visible" });
-        await select.selectOption({ label: optionText });
-    }
-
     // Hàm click button dùng locator này
     async clickButtonByText(text: string): Promise<void> {
         const button = this.btnByText(text);
@@ -72,16 +60,21 @@ export class BaseDashboard {
         await button.waitFor({ state: "visible", timeout: 5000 });
         await button.click();
     }
-    async clickFilter(text: string): Promise<void> {
-        const button = this.btnfilter(text);
+    async clictab(tabName: string): Promise<void> {
+        const button = this.tabmenu(tabName);
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
     }
 
-    async clickOptionFilter(option: string): Promise<void> {
-        const opt = this.page.getByRole("option", { name: option });
-        await opt.waitFor();
-        await opt.click();
+    async selectTimerange(timerange: string): Promise<void> {
+        const option = this.timerange(timerange);
+        await option.waitFor({ state: "visible", timeout: 30000 });
+        await option.click();
+    }
+    async clickCustomrange(datetime: string): Promise<void> {
+        const button = this.customrange(datetime);
+        await button.waitFor({ state: "visible", timeout: 10000 });
+        await button.click();
     }
 
     // New helper: Điền email vào input email cụ thể
@@ -97,6 +90,39 @@ export class BaseDashboard {
         await option.waitFor({ state: "visible", timeout: 30000 });
         await option.click();
     }
+    async pickDate(calendarIndex: number, date: string) {
+        const calendar = this.page.locator(`(//*[@data-testid="date-range-picker-custom"]//div[contains(@class,"calendar-section")])[${calendarIndex}]`);
+
+        const monthLabel = calendar.locator(".rdp-caption_label");
+        const prevBtn = calendar.locator(".rdp-button_previous");
+        const targetMonth = new Date(date).toLocaleString("en-US", {
+            month: "long",
+            year: "numeric",
+        });
+        while (true) {
+            const currentMonth = (await monthLabel.textContent())?.trim();
+            if (currentMonth === targetMonth) break;
+            const isDisabled = await prevBtn.getAttribute("aria-disabled");
+            if (isDisabled === "true") {
+                throw new Error(`Không thể về tháng: ${targetMonth}`);
+            }
+            await prevBtn.click();
+        }
+        const day = calendar.locator(`//*[@data-day="${date}" and not(@data-disabled="true")]`);
+        if ((await day.count()) === 0) {
+            throw new Error(`Date ${date} không tồn tại hoặc bị disable`);
+        }
+        await day.click();
+    }
+    async clickSaveDateRange() {
+        await this.saveButton().waitFor({ state: "visible" });
+        await this.saveButton().click();
+    }
+    async selectDateRange(start: string, end: string) {
+        await this.pickDate(1, start); // Start
+        await this.pickDate(2, end); // End
+    }
+
     //#endregion
 }
 

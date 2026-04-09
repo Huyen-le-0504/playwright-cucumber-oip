@@ -9,9 +9,15 @@ Feature: Dashboard Page
         And user should be on dashboard
         And I click button to select tenant
         And I selects tenant "<tenant>"
+        And I click filter
+        And I selects option "<option>" on filter
         Examples:
-            | tenant    |
-            | Indonesia |
+            | tenant    | option              |
+            | Indonesia | All DVCS            |
+            | Indonesia | Yara Connect        |
+            | Indonesia | Yara Farmcare       |
+            | Indonesia | Admin Portal Webapp |
+            | Indonesia | Heartbeat           |
 # | India     |
 # | Thailand  |
 # | Kenya     |

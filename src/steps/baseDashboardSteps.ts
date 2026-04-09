@@ -27,7 +27,7 @@ When("I click button {string}", async function (text: string) {
     await this.baseDashboard.clickButtonByText(text);
 });
 
-//  LẤY MAGIC LINK TỪ OUTLOOK UI
+//  LẤY LINK LOGIN TỪ OUTLOOK
 When("I wait for magic link and navigate", { timeout: 120 * 10000 }, async function (this: CustomWorld) {
     const browser = await chromium.launch({ headless: false });
 
@@ -85,5 +85,13 @@ When("I click button to select tenant", async function () {
 
 When("I selects tenant {string}", async function (tenant: string) {
     await this.baseDashboard.selectOptionFromCombobox(tenant);
+    await this.page.waitForTimeout(3000);
+});
+When("I click filter", async function () {
+    await this.baseDashboard.clickFilter();
+});
+
+When("I selects option {string} on filter", async function (filtername: string) {
+    await this.baseDashboard.clickOptionFilter(filtername);
     await this.page.waitForTimeout(3000);
 });
