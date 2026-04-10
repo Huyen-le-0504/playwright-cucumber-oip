@@ -1,33 +1,22 @@
-//keywords
 import { Given, When, Then, DataTable } from "@cucumber/cucumber";
 import { CustomWorld } from "../support/world";
 import { expect, chromium, Page, Locator } from "@playwright/test";
 import { BaseDashboard } from "../pages/baseDashboard";
-
+//URL navigation
 Given("user is on dashboard", async function (this: CustomWorld) {
     await this.baseDashboard.goto(this.config.baseUrl);
 });
-
-Then("I should see {string} in cart icon", async function (count: string) {
-    const cartBadge = this.page.locator(".bg-qa-clr");
-    if (count === "0") {
-        await expect(cartBadge).toHaveCount(0);
-    } else {
-        await expect(cartBadge).toHaveText(count);
-    }
-});
-
 // Fill input
 When("I fill input {string} with {string}", async function (inputName: string, value: string) {
     await this.baseDashboard.fillInGeneralInputField(inputName, value);
 });
 
-// Click button
+// Click button login
 When("I click button {string}", async function (text: string) {
     await this.baseDashboard.clickButtonByText(text);
 });
 
-//  LẤY LINK LOGIN TỪ OUTLOOK
+//  Lấy link login từ outlook
 When("I wait for magic link and navigate", { timeout: 120 * 10000 }, async function (this: CustomWorld) {
     const browser = await chromium.launch({ headless: false });
 
@@ -56,7 +45,6 @@ When("I wait for magic link and navigate", { timeout: 120 * 10000 }, async funct
                 magicLink = await linkElement.getAttribute("href");
                 break;
             }
-
             console.log(` Chưa có mail... retry ${i + 1}`);
             await outlookPage.waitForTimeout(5000);
             await outlookPage.reload();
@@ -79,18 +67,24 @@ When("I wait for magic link and navigate", { timeout: 120 * 10000 }, async funct
 Then("user should be on dashboard", async function () {
     await this.page.waitForURL(`${process.env.BASE_URL}/en-us/dashboard?countryCode=gh`);
 });
+//click để mở dropdown list chọn tenant
 When("I click button to select tenant", async function () {
     await this.baseDashboard.clickButtonBycombobox();
 });
-
+//Chọn option tenant
 When("I selects tenant {string}", async function (tenant: string) {
     await this.baseDashboard.selectOptionFromCombobox(tenant);
     await this.page.waitForTimeout(3000);
 });
+//Click để mở dropdown filter
 When("I click filter", async function () {
     await this.baseDashboard.clickFilter();
 });
-
+//Click để mở dropdown filter latency
+When("I click open filter", async function () {
+    await this.baseDashboard.clickFilterlatency();
+});
+//Chọn option trong dropdown filter
 When("I selects option {string} on filter", async function (filtername: string) {
     await this.baseDashboard.clickOptionFilter(filtername);
     await this.page.waitForTimeout(3000);

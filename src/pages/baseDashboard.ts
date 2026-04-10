@@ -29,10 +29,12 @@ export class BaseDashboard {
     btnBytenant = (tenant: string) => this.page.locator(`xpath=(.//div[@role="option" and .//span[text()='${tenant}']])`);
     btncombobox = (name: string) => this.page.locator(`xpath=(//button[@type="button" and @role="combobox"]//span[@style="pointer-events: none;"]//div[@class="flex items-center gap-2 pr-2"])`);
     btnSelectFilter = (filtername: string) => this.page.locator(`xpath=(//div[@role="presentation"]//div[@role="option" and @tabindex="-1"]//span[@id="radix-:r366:" and normalize-space()="${filtername}"])`);
-    btnfilter = (nameoffilter: String) => this.page.locator(`xpath=(//div[@class="space-y-2"]//button[@type="button" and @role="combobox"])`);
+    btnfilteroverall = (name: string) => this.page.locator(`xpath=(//div[@class="space-y-2"]//button[@type="button" and @role="combobox"])`);
+    btnfilterlatency = (name: string) => this.page.locator(`xpath=(//div[@class="space-y-3 lg:space-y-5"]//button[@type="button" and @role="combobox"])`);
     //#endregion
 
     //#region Actions
+    // URL navigation
     async goto(url: string): Promise<void> {
         await this.page.goto(url);
         await this.page.waitForLoadState("domcontentloaded", { timeout: 30000 });
@@ -46,56 +48,65 @@ export class BaseDashboard {
     async expectTextVisible(text: string): Promise<void> {
         await expect(this.page.getByText(text)).toBeVisible();
     }
-
+    //#endregion
+    //#region Actions
+    //Click link "Incident Detail"
     async clickDropdown(text: string) {
         const dropdown = this.btnByflag(text);
         await dropdown.waitFor({ state: "visible" });
         await dropdown.click();
     }
-
+    //Click để mở dropdown list chọn tenant
     async selectDropdownByText(selectId: string, optionText: string | null): Promise<void> {
         if (!optionText) return;
         const select = this.page.locator(`select#${selectId}`);
         await select.waitFor({ state: "visible" });
         await select.selectOption({ label: optionText });
     }
-
     // Hàm click button dùng locator này
     async clickButtonByText(text: string): Promise<void> {
         const button = this.btnByText(text);
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
     }
-
+    //Click để mở dropdown list chọn tenant
     async clickButtonBycombobox(text: string): Promise<void> {
         const button = this.btncombobox(text);
         await button.waitFor({ state: "visible", timeout: 5000 });
         await button.click();
     }
+    //Click để mở dropdown filter
     async clickFilter(text: string): Promise<void> {
-        const button = this.btnfilter(text);
+        const button = this.btnfilteroverall(text);
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
     }
-
+    //Click để mở filter latency
+    async clickFilterlatency(text: string): Promise<void> {
+        const button = this.btnfilterlatency(text);
+        await button.waitFor({ state: "visible", timeout: 10000 });
+        await button.click();
+    }
+    //Chọn option trong dropdown filter
     async clickOptionFilter(option: string): Promise<void> {
         const opt = this.page.getByRole("option", { name: option });
         await opt.waitFor();
         await opt.click();
     }
-
-    // New helper: Điền email vào input email cụ thể
+    //Chọn option tenant
+    async selectOptionFromCombobox(optionText: string): Promise<void> {
+        const option = this.page.locator(`text=${optionText}`);
+        await option.waitFor({ state: "visible", timeout: 30000 });
+        await option.click();
+    }
+    //#endregion
+    //#region Actions
+    //Điền email vao input để login
     async fillInGeneralInputField(nameOrId: string, value: string | null) {
         if (!value) return;
         const input = this.txtGeneralInputField(nameOrId);
         await input.waitFor({ state: "visible" });
         await input.fill(value);
-    }
-
-    async selectOptionFromCombobox(optionText: string): Promise<void> {
-        const option = this.page.locator(`text=${optionText}`);
-        await option.waitFor({ state: "visible", timeout: 30000 });
-        await option.click();
     }
     //#endregion
 }
