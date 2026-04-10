@@ -137,3 +137,5 @@ dist
 
 #report
 report/
+
+outlook-auth.json
