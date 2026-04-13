@@ -28,6 +28,18 @@ export class BaseDashboard {
     btnByflag = (text: string) => this.page.locator(`xpath=(//button[@type="button" and @role="combobox" and @aria-controls="radix-:rdjq:"])`);
     btnBytenant = (tenant: string) => this.page.locator(`xpath=(.//div[@role="option" and .//span[text()='${tenant}']])`);
     btncombobox = (name: string) => this.page.locator(`xpath=(//button[@type="button" and @role="combobox"]//span[@style="pointer-events: none;"]//div[@class="flex items-center gap-2 pr-2"])`);
+    btnChooseProject = (project: string) => this.page.locator(`//div[@data-testid="${project}"]// button[@role="combobox"]`);
+    optionChooseProject = (option: string) => this.page.locator(`//div[@role="option"]//span[normalize-space()="${option}"]`);
+    btnLatencyTime = (text: string) => this.page.locator(`//div[@data-testid="latency-section"]//button[normalize-space()="${text}"]`);
+    btnViewAllservices = () => this.page.locator(`//button[text()="View all services"]`);
+    btnClose = () => this.page.locator(`//div[@role='dialog']//button[.//span[text()='Close']]`);
+    iconInfo = () => this.page.locator(`//svg[contains(@class,'lucide-info')]`);
+    btnLastResult = (text: string) => this.page.locator(`//div[@data-testid="last-results-filter"]//button[normalize-space()="${text}"]`);
+    btnFilterModules = (text: string) => this.page.locator(`//button[.//div[normalize-space()='${text}']]`);
+
+    //div[@role="<roleName>"]//span[normalize-space()="<text>"]
+    //div[@data-testid="<dataTest-id>"]// button[@role="<roleName>"]
+
     //#endregion
 
     //#region Actions
@@ -84,7 +96,72 @@ export class BaseDashboard {
         await option.waitFor({ state: "visible", timeout: 30000 });
         await option.click();
     }
+
+    async selectFilterProject(text: string): Promise<void> {
+        const button = this.btnChooseProject(text);
+        await button.waitFor({ state: "visible", timeout: 30000 });
+        await button.click();
+
+        const option = this.optionChooseProject(text);
+        await option.waitFor({ state: "visible", timeout: 30000 });
+        await option.click();
+    }
+
+    async selectLatencyTime(text: string): Promise<void> {
+        const button = this.btnLatencyTime(text);
+        await button.waitFor({ state: "visible", timeout: 3000 });
+        await button.click();
+    }
+
+    async clickViewAllServices(): Promise<void> {
+        const button = this.btnViewAllservices();
+        await button.waitFor({ state: "visible", timeout: 3000 });
+        await button.click();
+    }
+    async clickCloseViewAllServices(): Promise<void> {
+        const button = this.btnClose();
+        await button.waitFor({ state: "visible", timeout: 3000 });
+        await button.click();
+    }
+
+    async clickIconInfo(): Promise<void> {
+        const button = this.iconInfo();
+        await button.waitFor({ state: "visible", timeout: 3000 });
+        await button.click();
+    }
+
+    async selectFilterModule(text: string): Promise<void> {
+        const button = this.btnFilterModules(text);
+        await button.waitFor({ state: "visible", timeout: 3000 });
+        await button.click();
+    }
+
+    // async selectFilterModule(text: string): Promise<void> {
+    //     const button = this.btnFilterModules(text);
+
+    //     await button.waitFor({ state: "visible" });
+    //     await button.scrollIntoViewIfNeeded();
+
+    //     const isDisabled = await button.isDisabled();
+
+    //     const value = Number(await button.locator("span.tabular-nums").textContent());
+
+    //     // log thôi, KHÔNG return
+    //     if (isDisabled || value === 0) {
+    //         console.log(`Button "${text}" may be inactive (disabled or value=0)`);
+    //     }
+
+    //     // vẫn click
+    //     await button.click({ force: true });
+    // }
+
+    async selectLastResult(text: string): Promise<void> {
+        const button = this.btnLastResult(text);
+        await button.waitFor({ state: "visible", timeout: 3000 });
+        await button.click();
+    }
     //#endregion
 }
 
 //#endregion
+1;

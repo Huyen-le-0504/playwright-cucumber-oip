@@ -1,9 +1,9 @@
 Feature: Dashboard Page
 
     @Login
-    Scenario: Overall Availability
+    Scenario: Login and select tenant
         Given user is on dashboard
-        When I fill input "email" with "huyen.le@yara.com"
+        When I fill input "email" with "mai.nguyen@yara.com"
         And I click button "Send login link"
         And I wait for magic link and navigate
         And user should be on dashboard
@@ -12,7 +12,52 @@ Feature: Dashboard Page
         Examples:
             | tenant    |
             | Indonesia |
-# | India     |
-# | Thailand  |
-# | Kenya     |
-# | Tanzania  |
+
+    @OverallAvailability
+    Scenario: Select overall availability filter
+        Given user is on dashboard
+        When I fill input "email" with "mai.nguyen@yara.com"
+        And I click button "Send login link"
+        And I wait for magic link and navigate
+        And user should be on dashboard
+        And I click button to select tenant
+        And I selects tenant "<tenant>"
+        And I select "<area>" filter project "<project>"
+
+        Examples:
+            | tenant    | area                         | project       |
+            | Indonesia | overall-availability-section | Yara Farmcare |
+
+    @Latency
+    Scenario: Select latency filter
+        Given user is on dashboard
+        When I fill input "email" with "mai.nguyen@yara.com"
+        And I click button "Send login link"
+        And I wait for magic link and navigate
+        And user should be on dashboard
+        And I click button to select tenant
+        And I selects tenant "<tenant>"
+        And I select "<area>" filter project "<project>"
+        And I select latency time "<latencyTime>"
+        And I click view all services
+        And I click close view all services
+
+        Examples:
+            | tenant    | area            | project      | latencyTime |
+            | Indonesia | latency-section | Yara Connect | 30d         |
+
+    @ModuleFilter
+    Scenario: Select time range and module filters
+        Given user is on dashboard
+        When I fill input "email" with "mai.nguyen@yara.com"
+        And I click button "Send login link"
+        And I wait for magic link and navigate
+        And user should be on dashboard
+        And I click button to select tenant
+        And I selects tenant "<tenant>"
+        And I select last result "<lastResult>"
+        And I select filter module "<module>"
+
+        Examples:
+            | tenant    | lastResult | module          |
+            | Indonesia | 24h        | PASSING MODULES |

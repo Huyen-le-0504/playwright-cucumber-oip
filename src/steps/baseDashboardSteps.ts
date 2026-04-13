@@ -87,3 +87,40 @@ When("I selects tenant {string}", async function (tenant: string) {
     await this.baseDashboard.selectOptionFromCombobox(tenant);
     await this.page.waitForTimeout(3000);
 });
+
+//Choose project filter
+
+When("I select {string} filter project {string}", async function (area: string, project: string) {
+    await this.baseDashboard.selectFilterProject(area, project);
+    await this.page.waitForTimeout(3000);
+});
+
+When("I select latency time {string}", async function (latencyText: string) {
+    await this.baseDashboard.selectLatencyTime(latencyText);
+    await this.page.waitForTimeout(3000);
+});
+
+When("I click view all services", async function () {
+    await this.baseDashboard.clickViewAllServices();
+    await this.page.waitForTimeout(3000);
+});
+
+When("I click close view all services", async function () {
+    await this.baseDashboard.clickCloseViewAllServices();
+    await this.page.waitForTimeout(3000);
+});
+
+When("I select last result {string}", async function (lastResultText: string) {
+    await this.baseDashboard.selectLastResult(lastResultText);
+    await this.page.waitForTimeout(3000);
+});
+
+When("I select filter module {string}", async function (moduleText: string) {
+    await this.baseDashboard.selectFilterModule(moduleText);
+    await this.page.waitForTimeout(3000);
+});
+
+// When("I select filter module", async function () {
+//     await this.baseDashboard.selectFilterModule();
+//     await this.page.waitForTimeout(3000);
+// });
