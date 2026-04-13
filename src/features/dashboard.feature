@@ -2,7 +2,7 @@ Feature: Dashboard Page
 
     @OverallAvailability
     Scenario: Overall Availability
-        Given I is on dashboard
+        Given I am on dashboard
         When I fill input "email" with "huyen.le@yara.com"
         And I click button "Send login link"
         And I wait for magic link and navigate
@@ -21,7 +21,7 @@ Feature: Dashboard Page
 
     @latency
     Scenario: Latency
-        Given I is on dashboard
+        Given I am on dashboard
         When I fill input "email" with "huyen.le@yara.com"
         And I click button "Send login link"
         And I wait for magic link and navigate
@@ -41,7 +41,7 @@ Feature: Dashboard Page
 
     @module
     Scenario: Module
-        Given I is on dashboard
+        Given I am on dashboard
         When I fill input "email" with "huyen.le@yara.com"
         And I click button "Send login link"
         And I wait for magic link and navigate

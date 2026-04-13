@@ -8,11 +8,7 @@ When("I click tab {string} to menutab", async function (tab: string) {
     await this.baseIncident.clictab(tab);
     await this.page.waitForTimeout(2000);
 });
-//Chọn time range
-When("I selects timerange {string}", async function (timerange: string) {
-    await this.baseIncident.selectTimerange(timerange);
-    await this.page.waitForTimeout(2000);
-});
+
 //Click để mở custom range
 When("I click custom range", async function () {
     await this.baseIncident.clickCustomrange();
@@ -24,10 +20,6 @@ When("I selects and saves date range from {string} to {string}", async function 
     await this.page.waitForTimeout(2000);
 });
 //Click vào link có text cụ thể (Incident detail)
-// When("I click on link {string}", async function (text: string) {
-//     await this.baseIncident.clickLinkByText(text);
-//     await this.page.waitForTimeout(2000);
-// });
 When("I click on link {string} at index {int}", async function (text: string, index: number) {
     await this.baseIncident.clickLinkByText(text, Number(index));
 });

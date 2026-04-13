@@ -35,23 +35,6 @@ export class BaseIncident {
     btnStep = (step: string) => this.page.locator(`xpath=(//button[.//div[contains(text(),'${step}')]])`);
     btnviewlog = (text: string) => this.page.locator(`xpath=((//button[normalize-space()="${text}"])[1])`);
     //#endregion
-
-    //#region Actions
-    // URL navigation
-    async goto(url: string): Promise<void> {
-        await this.page.goto(url);
-        await this.page.waitForLoadState("domcontentloaded", { timeout: 30000 });
-    }
-
-    async reload(): Promise<void> {
-        await this.page.reload();
-        await this.page.waitForLoadState("domcontentloaded");
-    }
-
-    async expectTextVisible(text: string): Promise<void> {
-        await expect(this.page.getByText(text)).toBeVisible();
-    }
-    //#endregion
     //#region Actions
     //Click link "Incident Detail"
     async clickButtonByText(text: string): Promise<void> {

@@ -3,7 +3,7 @@ import { CustomWorld } from "../support/world";
 import { expect, chromium, Page, Locator } from "@playwright/test";
 import { BaseDashboard } from "../pages/baseDashboard";
 //URL navigation
-Given("I is on dashboard", async function (this: CustomWorld) {
+Given("I am on dashboard", async function (this: CustomWorld) {
     await this.basePage.goto(this.config.baseUrl);
 });
 // Fill input
@@ -33,6 +33,7 @@ When("I selects tenant {string}", async function (tenant: string) {
 When("I click filter {string}", async function (datatestid: string) {
     await this.basePage.clickFilter(datatestid);
 });
+
 //Chọn option trong dropdown filter
 When("I selects option {string} on filter", async function (filtername: string) {
     await this.basePage.clickOptionFilter(filtername);

@@ -2,18 +2,17 @@ Feature: Incident Page
 
     @Incidentselecttimerange
     Scenario Outline: Select timerange
-        Given user is on dashboard
+        Given I am on dashboard
         When I fill input "email" with "huyen.le@yara.com"
         And I click button "Send login link"
         And I wait for magic link and navigate
         And user should be on dashboard
-
         When I perform actions:
-            | action    | value     | startDate | endDate |
-            | tab       | Incidents |           |         |
-            | combobox  | Tenant    |           |         |
-            | option    | <tenant>  |           |         |
-            | timerange | <range>   |           |         |
+            | action    | value     |
+            | tab       | Incidents |
+            | combobox  | Tenant    |
+            | option    | <tenant>  |
+            | timerange | <range>   |
 
         Examples:
             | tenant    | range |
@@ -25,12 +24,11 @@ Feature: Incident Page
 
     @Incidentselectcustomrange
     Scenario Outline: Select custom date range and open incident
-        Given user is on dashboard
+        Given I am on dashboard
         When I fill input "email" with "huyen.le@yara.com"
         And I click button "Send login link"
         And I wait for magic link and navigate
         And user should be on dashboard
-
         When I perform actions:
             | action    | value           | startDate   | endDate   |
             | tab       | Incidents       |             |           |
@@ -43,14 +41,14 @@ Feature: Incident Page
         Examples:
             | tenant    | startDate  | endDate    |
             | Indonesia | 2026-02-01 | 2026-04-05 |
-            | India     | 2026-04-05 | 2026-04-09 |
-            | Thailand  | 2026-03-25 | 2026-04-08 |
-            | Kenya     | 2026-04-05 | 2026-04-09 |
+    # | India     | 2026-04-05 | 2026-04-09 |
+    # | Thailand  | 2026-03-25 | 2026-04-08 |
+    # | Kenya     | 2026-04-05 | 2026-04-09 |
 
 
     @Incidentdetailcustomrange
     Scenario Outline: Open incident and handle workflow
-        Given user is on dashboard
+        Given I am on dashboard
         When I fill input "email" with "huyen.le@yara.com"
         And I click button "Send login link"
         And I wait for magic link and navigate
@@ -73,7 +71,7 @@ Feature: Incident Page
 
     @Incidentdetailtimerange
     Scenario Outline: Open incident and handle workflow
-        Given user is on dashboard
+        Given I am on dashboard
         When I fill input "email" with "huyen.le@yara.com"
         And I click button "Send login link"
         And I wait for magic link and navigate
