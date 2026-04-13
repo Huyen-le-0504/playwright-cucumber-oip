@@ -35,7 +35,7 @@ When("I click filter {string}", async function (datatestid: string) {
 });
 
 //Chọn option trong dropdown filter
-When("I selects option {string} on filter", async function (filtername: string) {
+When("I selects {string} option on filter", async function (filtername: string) {
     await this.basePage.clickOptionFilter(filtername);
     await this.page.waitForTimeout(3000);
 });
