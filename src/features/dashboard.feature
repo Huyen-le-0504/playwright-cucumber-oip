@@ -7,11 +7,12 @@ Feature: Dashboard Page
         And I wait for magic link and navigate
         And I should be on dashboard
         And I click button to select tenant
-        And I selects tenant "<tenant>"
+
 
 
     @OverallAvailability
     Scenario: Overall Availability
+        And I selects tenant "<tenant>"
         And I click filter "<filter>"
         And I selects "<option>" option on filter
         Examples:
@@ -20,6 +21,7 @@ Feature: Dashboard Page
 
     @latency
     Scenario: Latency
+        And I selects tenant "<tenant>"
         And I click filter "latency-section"
         And I selects "<option>" option on filter
         And I select "<timerange>" timerange "<datatestid>"
@@ -27,9 +29,9 @@ Feature: Dashboard Page
             | tenant | option       | timerange | datatestid      |
             | India  | Yara Connect | 30d       | latency-section |
 
-
     @module
     Scenario: Module
+        And I selects tenant "<tenant>"
         And I select "<timerange>" timerange "<datatestid>"
         And I click status modules if they have value
         Examples:

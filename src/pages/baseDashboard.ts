@@ -34,22 +34,6 @@ export class BaseDashboard {
     //#endregion
 
     //#region Actions
-    // URL navigation
-    async goto(url: string): Promise<void> {
-        await this.page.goto(url);
-        await this.page.waitForLoadState("domcontentloaded", { timeout: 30000 });
-    }
-
-    async reload(): Promise<void> {
-        await this.page.reload();
-        await this.page.waitForLoadState("domcontentloaded");
-    }
-
-    async expectTextVisible(text: string): Promise<void> {
-        await expect(this.page.getByText(text)).toBeVisible();
-    }
-    //#endregion
-    //#region Actions
     //Click link "Incident Detail"
     // async clickDropdown(text: string) {
     //     const dropdown = this.btnByflag(text);
@@ -71,7 +55,7 @@ export class BaseDashboard {
             console.log(`${status} has NO data → skip`);
         }
     }
-    //click theo thứ tự
+    //click theo thứ tư
     async clickModulesByPriority(): Promise<void> {
         const priority = ["PASSING MODULES", "DEGRADED MODULES", "FAILED MODULES"];
 

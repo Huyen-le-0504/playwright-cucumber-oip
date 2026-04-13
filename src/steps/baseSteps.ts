@@ -6,6 +6,52 @@ import { BaseDashboard } from "../pages/baseDashboard";
 Given("I am on dashboard", async function (this: CustomWorld) {
     await this.basePage.goto(this.config.baseUrl);
 });
+//  Lấy link login từ outlook
+When("I wait for magic link and navigate", { timeout: 120 * 10000 }, async function (this: CustomWorld) {
+    const browser = await chromium.launch({ headless: false });
+    try {
+        const context = await browser.newContext({
+            storageState: "outlook-auth.json",
+        });
+        const outlookPage = await context.newPage();
+        await outlookPage.goto("https://outlook.office.com/mail");
+        await outlookPage.waitForSelector("div[role='main']", {
+            timeout: 60000,
+        });
+        await outlookPage.waitForTimeout(8000);
+        const emails = outlookPage.locator("span:has-text('login')");
+        const count = await emails.count();
+        if (count === 0) {
+            throw new Error("No login emails found");
+        }
+        const latestEmail = emails.nth(count - 1);
+
+        await latestEmail.scrollIntoViewIfNeeded();
+        await latestEmail.click();
+        const linkElement = outlookPage.locator("a:has-text('Log In')");
+        await linkElement.waitFor({ state: "visible", timeout: 30000 });
+        let magicLink = await linkElement.getAttribute("href");
+
+        if (!magicLink) {
+            throw new Error("Cannot get magic link");
+        }
+        magicLink = magicLink.trim();
+
+        console.log("MAGIC LINK:", magicLink);
+        await this.page.context().grantPermissions([]);
+        await this.page.goto(magicLink, {
+            waitUntil: "domcontentloaded",
+        });
+
+        await this.page.waitForLoadState("networkidle");
+        await this.page.waitForFunction(() => {
+            return window.location.href.includes("dashboard");
+        });
+        await this.page.waitForTimeout(2000);
+    } finally {
+        await browser.close();
+    }
+});
 // Fill input
 When("I fill input {string} with {string}", async function (inputName: string, value: string) {
     await this.basePage.fillInGeneralInputField(inputName, value);
@@ -17,7 +63,7 @@ When("I click button {string}", async function (text: string) {
 });
 
 // Verify text
-Then("user should be on dashboard", async function () {
+Then("I should be on dashboard", async function () {
     await this.page.waitForURL(`${process.env.BASE_URL}/en-us/dashboard?countryCode=gh`);
 });
 //click để mở dropdown list chọn tenant
@@ -27,7 +73,6 @@ When("I click button to select tenant", async function () {
 //Chọn option tenant
 When("I selects tenant {string}", async function (tenant: string) {
     await this.basePage.selectOptionFromCombobox(tenant);
-    await this.page.waitForTimeout(3000);
 });
 //Click để mở dropdown filter
 When("I click filter {string}", async function (datatestid: string) {
