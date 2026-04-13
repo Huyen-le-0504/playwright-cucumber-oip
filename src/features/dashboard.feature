@@ -6,18 +6,18 @@ Feature: Dashboard Page
         When I fill input "email" with "huyen.le@yara.com"
         And I click button "Send login link"
         And I wait for magic link and navigate
-        And user should be on dashboard
+        And I should be on dashboard
         And I click button to select tenant
         And I selects tenant "<tenant>"
-        And I click filter
+        And I click filter "overall-availability-section"
         And I selects option "<option>" on filter
         Examples:
-            | tenant    | option              | nameoffilter           |
-            | Indonesia | All DVCS            | space-y-2              |
-            | Indonesia | Yara Connect        | space-y-3 lg:space-y-5 |
-            | Indonesia | Yara Farmcare       |                        |
-            | Indonesia | Admin Portal Webapp |                        |
-            | Indonesia | Heartbeat           |                        |
+            | tenant    | option              |
+            | Indonesia | All DVCS            |
+            | Indonesia | Yara Connect        |
+            | Indonesia | Yara Farmcare       |
+            | Indonesia | Admin Portal Webapp |
+            | Indonesia | Heartbeat           |
 
     @latency
     Scenario: Latency
@@ -25,10 +25,10 @@ Feature: Dashboard Page
         When I fill input "email" with "huyen.le@yara.com"
         And I click button "Send login link"
         And I wait for magic link and navigate
-        And user should be on dashboard
+        And I should be on dashboard
         And I click button to select tenant
         And I selects tenant "<tenant>"
-        And I click open filter
+        And I click filter "latency-section"
         And I selects option "<option>" on filter
         Examples:
             | tenant | option              |
@@ -37,5 +37,21 @@ Feature: Dashboard Page
             | India  | Yara Farmcare       |
             | India  | Admin Portal Webapp |
             | India  | Heartbeat           |
+
+# @Module
+# Scenario: Module
+#     Given user is on dashboard
+#     When I fill input "email" with "huyen.le@yara.com"
+#     And I click button "Send login link"
+#     And I wait for magic link and navigate
+#     And I should be on dashboard
+#     And I click button to select tenant
+#     And I selects tenant "<tenant>"
+#     And I select timerange "<timerange>"
+#     Examples:
+#         | tenant | timerange |
+#         | India  | 30d       |
+
+
 
 

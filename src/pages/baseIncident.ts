@@ -2,17 +2,17 @@
 import { chromium, Page, expect, Locator } from "playwright/test";
 import * as imaps from "imap-simple";
 import * as dotenv from "dotenv";
-
+import { BasePage } from "@pages/basePage";
 dotenv.config(); // Load biến môi trường từ .env
 
 export class BaseIncident {
     static selectTenant(tenantName: string) {
         throw new Error("Method not implemented.");
     }
+
     protected page: Page;
     readonly tenantDropdown: Locator;
     constructor(page: Page) {
-        this.page = page;
         this.page = page;
         this.tenantDropdown = page.locator('button[data-testid="tenant-dropdown"]');
         this.page.setDefaultTimeout(30_000);
@@ -71,6 +71,7 @@ export class BaseIncident {
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
     }
+
     //Chọn time range
     async selectTimerange(timerange: string): Promise<void> {
         const option = this.timerange(timerange);

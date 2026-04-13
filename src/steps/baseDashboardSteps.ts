@@ -3,19 +3,6 @@ import { CustomWorld } from "../support/world";
 import { expect, chromium, Page, Locator } from "@playwright/test";
 import { BaseDashboard } from "../pages/baseDashboard";
 //URL navigation
-Given("user is on dashboard", async function (this: CustomWorld) {
-    await this.baseDashboard.goto(this.config.baseUrl);
-});
-// Fill input
-When("I fill input {string} with {string}", async function (inputName: string, value: string) {
-    await this.baseDashboard.fillInGeneralInputField(inputName, value);
-});
-
-// Click button login
-When("I click button {string}", async function (text: string) {
-    await this.baseDashboard.clickButtonByText(text);
-});
-
 //  Lấy link login từ outlook
 When("I wait for magic link and navigate", { timeout: 120 * 10000 }, async function (this: CustomWorld) {
     const browser = await chromium.launch({ headless: false });
@@ -64,7 +51,7 @@ When("I wait for magic link and navigate", { timeout: 120 * 10000 }, async funct
     }
 });
 // Verify text
-Then("user should be on dashboard", async function () {
+Then("I should be on dashboard", async function () {
     await this.page.waitForURL(`${process.env.BASE_URL}/en-us/dashboard?countryCode=gh`);
 });
 //click để mở dropdown list chọn tenant
@@ -77,13 +64,10 @@ When("I selects tenant {string}", async function (tenant: string) {
     await this.page.waitForTimeout(3000);
 });
 //Click để mở dropdown filter
-When("I click filter", async function () {
-    await this.baseDashboard.clickFilter();
+When("I click filter {string}", async function (datatestid: string) {
+    await this.baseDashboard.clickFilter(datatestid);
 });
-//Click để mở dropdown filter latency
-When("I click open filter", async function () {
-    await this.baseDashboard.clickFilterlatency();
-});
+
 //Chọn option trong dropdown filter
 When("I selects option {string} on filter", async function (filtername: string) {
     await this.baseDashboard.clickOptionFilter(filtername);
