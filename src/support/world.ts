@@ -3,6 +3,7 @@ import { IWorldOptions, setWorldConstructor, World } from "@cucumber/cucumber";
 import { config } from "../support/config";
 import { BaseDashboard } from "@pages/baseDashboard";
 import { BaseIncident } from "@pages/baseIncident";
+import { BasePage } from "@pages/basePage";
 
 export class CustomWorld extends World {
     browser!: Browser;
@@ -11,6 +12,7 @@ export class CustomWorld extends World {
 
     baseDashboard!: BaseDashboard;
     baseIncident!: BaseIncident;
+    basePage!: BasePage;
 
     config = config;
     accessToken: string | undefined;

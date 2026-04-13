@@ -54,22 +54,25 @@ When("I wait for magic link and navigate", { timeout: 120 * 10000 }, async funct
 Then("I should be on dashboard", async function () {
     await this.page.waitForURL(`${process.env.BASE_URL}/en-us/dashboard?countryCode=gh`);
 });
-//click để mở dropdown list chọn tenant
-When("I click button to select tenant", async function () {
-    await this.baseDashboard.clickButtonBycombobox();
-});
-//Chọn option tenant
-When("I selects tenant {string}", async function (tenant: string) {
-    await this.baseDashboard.selectOptionFromCombobox(tenant);
-    await this.page.waitForTimeout(3000);
-});
-//Click để mở dropdown filter
-When("I click filter {string}", async function (datatestid: string) {
-    await this.baseDashboard.clickFilter(datatestid);
-});
+//click status filter module
+When("I click status modules if they have value", async function () {
+    const priority = ["PASSING MODULES", "DEGRADED MODULES", "FAILED MODULES"];
 
-//Chọn option trong dropdown filter
-When("I selects option {string} on filter", async function (filtername: string) {
-    await this.baseDashboard.clickOptionFilter(filtername);
-    await this.page.waitForTimeout(3000);
+    for (const status of priority) {
+        const container = this.page.locator(`//button[.//div[contains(text(),'${status}')]]`);
+
+        await container.first().waitFor({ state: "visible" });
+
+        const valueText = await container.locator("div").filter({ hasText: /^\d+$/ }).first().textContent();
+
+        const value = parseInt(valueText || "0");
+
+        if (value > 0) {
+            console.log(`Click ${status} (${value})`);
+            await container.first().click();
+            await this.page.waitForTimeout(5000);
+        } else {
+            console.log(`Skip ${status} (${value})`);
+        }
+    }
 });

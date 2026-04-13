@@ -30,6 +30,7 @@ export class BaseDashboard {
     btncombobox = (name: string) => this.page.locator(`xpath=(//button[@type="button" and @role="combobox"]//span[@style="pointer-events: none;"]//div[@class="flex items-center gap-2 pr-2"])`);
     btnSelectFilter = (filtername: string) => this.page.locator(`xpath=(//div[@role="presentation"]//div[@role="option" and @tabindex="-1"]//span[@id="radix-:r366:" and normalize-space()="${filtername}"])`);
     btnfilter = (datatestid: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[@type="button" and @role="combobox"])`);
+    btnFilterStatusModule = (status: string) => this.page.locator(`//button[.//*[normalize-space()='${status}']]`);
     //#endregion
 
     //#region Actions
@@ -50,57 +51,35 @@ export class BaseDashboard {
     //#endregion
     //#region Actions
     //Click link "Incident Detail"
-    async clickDropdown(text: string) {
-        const dropdown = this.btnByflag(text);
-        await dropdown.waitFor({ state: "visible" });
-        await dropdown.click();
+    // async clickDropdown(text: string) {
+    //     const dropdown = this.btnByflag(text);
+    //     await dropdown.waitFor({ state: "visible" });
+    //     await dropdown.click();
+    // }
+    //check value khác 0
+    async clickstatus(status: string): Promise<void> {
+        const container = this.page.locator(`//div[.//div[text()='${status}']]`);
+        const valueLocator = container.locator("div").filter({ hasText: /^\d+$/ }).first();
+
+        const valueText = await valueLocator.textContent();
+        const value = parseInt(valueText || "0");
+
+        if (value > 0) {
+            console.log(`${status} has data: ${value} → click`);
+            await container.click();
+        } else {
+            console.log(`${status} has NO data → skip`);
+        }
     }
-    //Click để mở dropdown list chọn tenant
-    async selectDropdownByText(selectId: string, optionText: string | null): Promise<void> {
-        if (!optionText) return;
-        const select = this.page.locator(`select#${selectId}`);
-        await select.waitFor({ state: "visible" });
-        await select.selectOption({ label: optionText });
+    //click theo thứ tự
+    async clickModulesByPriority(): Promise<void> {
+        const priority = ["PASSING MODULES", "DEGRADED MODULES", "FAILED MODULES"];
+
+        for (const status of priority) {
+            await this.clickstatus(status);
+        }
     }
-    // Hàm click button dùng locator này
-    async clickButtonByText(text: string): Promise<void> {
-        const button = this.btnByText(text);
-        await button.waitFor({ state: "visible", timeout: 10000 });
-        await button.click();
-    }
-    //Click để mở dropdown list chọn tenant
-    async clickButtonBycombobox(text: string): Promise<void> {
-        const button = this.btncombobox(text);
-        await button.waitFor({ state: "visible", timeout: 5000 });
-        await button.click();
-    }
-    //Click để mở dropdown filter
-    async clickFilterlatency(datatestid: string): Promise<void> {
-        const button = this.btnfilter(datatestid);
-        await button.waitFor({ state: "visible", timeout: 10000 });
-        await button.click();
-    }
-    //Chọn option trong dropdown filter
-    async clickOptionFilter(option: string): Promise<void> {
-        const opt = this.page.getByRole("option", { name: option });
-        await opt.waitFor();
-        await opt.click();
-    }
-    //Chọn option tenant
-    async selectOptionFromCombobox(optionText: string): Promise<void> {
-        const option = this.page.locator(`text=${optionText}`);
-        await option.waitFor({ state: "visible", timeout: 30000 });
-        await option.click();
-    }
-    //#endregion
-    //#region Actions
-    //Điền email vao input để login
-    async fillInGeneralInputField(nameOrId: string, value: string | null) {
-        if (!value) return;
-        const input = this.txtGeneralInputField(nameOrId);
-        await input.waitFor({ state: "visible" });
-        await input.fill(value);
-    }
+
     //#endregion
 }
 

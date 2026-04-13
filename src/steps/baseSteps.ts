@@ -3,8 +3,8 @@ import { CustomWorld } from "../support/world";
 import { expect, chromium, Page, Locator } from "@playwright/test";
 import { BaseDashboard } from "../pages/baseDashboard";
 //URL navigation
-Given("user is on dashboard", async function (this: CustomWorld) {
-    await this.baseDashboard.goto(this.config.baseUrl);
+Given("I is on dashboard", async function (this: CustomWorld) {
+    await this.basePage.goto(this.config.baseUrl);
 });
 // Fill input
 When("I fill input {string} with {string}", async function (inputName: string, value: string) {
@@ -33,14 +33,13 @@ When("I selects tenant {string}", async function (tenant: string) {
 When("I click filter {string}", async function (datatestid: string) {
     await this.basePage.clickFilter(datatestid);
 });
-
 //Chọn option trong dropdown filter
 When("I selects option {string} on filter", async function (filtername: string) {
     await this.basePage.clickOptionFilter(filtername);
     await this.page.waitForTimeout(3000);
 });
 //Chọn timerange
-When("I select timerange {string}", async function (timerange: string) {
-    await this.basePage.selectTimerange(timerange);
+When("I select {string} timerange {string}", async function (timerange: string, datatestid: string) {
+    await this.basePage.selectTimerange(timerange, datatestid);
     await this.page.waitForTimeout(2000);
 });
