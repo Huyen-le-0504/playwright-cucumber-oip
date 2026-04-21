@@ -24,11 +24,11 @@ export class BasePage {
     optionByText = (selectId: string, optionText: string) => this.page.locator(`xpath=//select[@id='${selectId}']/option[normalize-space()='${optionText}']`);
     btnBytenant = (tenant: string) => this.page.locator(`xpath=(.//div[@role="option" and .//span[text()='${tenant}']])`);
     btncombobox = (name: string) => this.page.locator(`xpath=(//button[@type="button" and @role="combobox"]//span[@style="pointer-events: none;"]//div[@class="flex items-center gap-2 pr-2"])`);
+    btnByText = (text: string) => this.page.locator(`xpath=(//button[@type="submit" and normalize-space()="${text}"])`);
     btnSelectFilter = (filtername: string) => this.page.locator(`xpath=(//div[@role="presentation"]//div[@role="option" and @tabindex="-1"]//span[@id="radix-:r366:" and normalize-space()="${filtername}"])`);
     btnfilter = (datatestid: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[@type="button" and @role="combobox"])`);
-    timerange = (timerange: string) => this.page.locator(`xpath=((//button[normalize-space()="${timerange}" and not(contains(@class,"hidden"))])[1])`);
-    //#endregion
-
+    timerange = (timerange: string, datatestid: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[normalize-space()="${timerange}" and not(contains(@class,"hidden"))])`); //#endregion
+    statusfilter = (status: string, timerange: string) => this.page.locator(`xpath=(//div[@data-testid="${status}"]//button[normalize-space()="${timerange}" and not(contains(@class,"hidden"))])`);
     //#region Actions
     // URL navigation
     async goto(url: string): Promise<void> {
@@ -46,6 +46,18 @@ export class BasePage {
     }
     //#endregion
     //#region Actions
+    // Hàm click button dùng locator này
+    async clickButtonByText(text: string): Promise<void> {
+        const button = this.btnByText(text);
+        await button.waitFor({ state: "visible", timeout: 10000 });
+        await button.click();
+    }
+    //Click để mở dropdown list chọn tenant
+    async clickButtonBycombobox(text: string): Promise<void> {
+        const button = this.btncombobox(text);
+        await button.waitFor({ state: "visible", timeout: 5000 });
+        await button.click();
+    }
     //Click để mở dropdown list chọn tenant
     async selectDropdownByText(selectId: string, optionText: string | null): Promise<void> {
         if (!optionText) return;
@@ -54,7 +66,7 @@ export class BasePage {
         await select.selectOption({ label: optionText });
     }
     //Click để mở dropdown filter
-    async clickFilterlatency(datatestid: string): Promise<void> {
+    async clickFilter(datatestid: string): Promise<void> {
         const button = this.btnfilter(datatestid);
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
@@ -72,11 +84,13 @@ export class BasePage {
         await option.click();
     }
     //Chọn timerange
-    async selectTimerange(timerange: string): Promise<void> {
-        const option = this.timerange(timerange);
+    async selectTimerange(timerange: string, datatestid: string): Promise<void> {
+        const option = this.timerange(timerange, datatestid);
         await option.waitFor({ state: "visible", timeout: 30000 });
         await option.click();
     }
+    //Chọn filter module theo status
+
     //#endregion
     //#region Actions
     //Điền email vao input để login

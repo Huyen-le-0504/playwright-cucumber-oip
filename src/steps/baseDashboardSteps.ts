@@ -3,73 +3,47 @@ import { CustomWorld } from "../support/world";
 import { expect, chromium, Page, Locator } from "@playwright/test";
 import { BaseDashboard } from "../pages/baseDashboard";
 //URL navigation
-//  Lấy link login từ outlook
-When("I wait for magic link and navigate", { timeout: 120 * 10000 }, async function (this: CustomWorld) {
-    const browser = await chromium.launch({ headless: false });
+//click status filter module
+When("I click status modules if they have value", async function () {
+    const priority = ["PASSING MODULES", "DEGRADED MODULES", "FAILED MODULES"];
 
-    try {
-        const context = await browser.newContext({
-            storageState: "outlook-auth.json",
-        });
-
-        const outlookPage = await context.newPage();
-
-        await outlookPage.goto("https://outlook.office.com/mail");
-
-        await outlookPage.waitForSelector("div[role='main']", { timeout: 30000 });
-
-        let magicLink: string | null = null;
-
-        for (let i = 0; i < 5; i++) {
-            const emailItem = outlookPage.locator("span:has-text('login')").first();
-
-            if (await emailItem.isVisible()) {
-                await emailItem.click();
-
-                const linkElement = outlookPage.locator("a:has-text('Log In')");
-                await linkElement.waitFor({ state: "visible", timeout: 10000 });
-
-                magicLink = await linkElement.getAttribute("href");
-                break;
-            }
-            console.log(` Chưa có mail... retry ${i + 1}`);
-            await outlookPage.waitForTimeout(5000);
-            await outlookPage.reload();
+    for (const status of priority) {
+        console.log(`\n🔍 Checking: ${status}`);
+        const container = this.page.locator(`//button[.//div[contains(text(),'${status}')]]`).first();
+        if ((await container.count()) === 0) {
+            console.log(`❌ Not found: ${status}`);
+            continue;
         }
 
-        if (!magicLink) {
-            throw new Error(" Không lấy được magic link");
+        await container.waitFor({ state: "visible", timeout: 2000 });
+        await container.scrollIntoViewIfNeeded();
+        const valueElement = container
+            .locator("div")
+            .filter({
+                hasText: /^[0-9,]+$/,
+            })
+            .first();
+
+        const valueText = await valueElement.textContent();
+        const value = parseInt((valueText || "0").replace(/,/g, ""));
+
+        if (value > 0) {
+            console.log(`✅ Click ${status} (${value})`);
+            const freshContainer = this.page.locator(`//button[.//div[contains(text(),'${status}')]]`).first();
+            await freshContainer.waitFor({ state: "visible", timeout: 2000 });
+            await freshContainer.scrollIntoViewIfNeeded();
+
+            await freshContainer.click();
+            await this.page.waitForTimeout(2000);
+        } else {
+            console.log(`⏭ Skip ${status} (${value})`);
         }
-
-        console.log(" Magic link:", magicLink);
-
-        await this.page.goto(magicLink);
-        await this.page.waitForURL("**/dashboard");
-        await this.page.waitForTimeout(4000);
-    } finally {
-        await browser.close();
     }
 });
-// Verify text
-Then("I should be on dashboard", async function () {
-    await this.page.waitForURL(`${process.env.BASE_URL}/en-us/dashboard?countryCode=gh`);
+//view all service
+When("I click view all services", async function () {
+    await this.baseDashboard.clicktopservice();
 });
-//click để mở dropdown list chọn tenant
-When("I click button to select tenant", async function () {
-    await this.baseDashboard.clickButtonBycombobox();
-});
-//Chọn option tenant
-When("I selects tenant {string}", async function (tenant: string) {
-    await this.baseDashboard.selectOptionFromCombobox(tenant);
-    await this.page.waitForTimeout(3000);
-});
-//Click để mở dropdown filter
-When("I click filter {string}", async function (datatestid: string) {
-    await this.baseDashboard.clickFilter(datatestid);
-});
-
-//Chọn option trong dropdown filter
-When("I selects option {string} on filter", async function (filtername: string) {
-    await this.baseDashboard.clickOptionFilter(filtername);
-    await this.page.waitForTimeout(3000);
+When("I click to close popup Services latency", async function () {
+    await this.baseDashboard.clickbtnClose();
 });

@@ -6,6 +6,7 @@ import { chromium, Browser } from "@playwright/test";
 import { CustomWorld } from "./world";
 import { BaseDashboard } from "../pages/baseDashboard";
 import { BaseIncident } from "../pages/baseIncident";
+import { BasePage } from "../pages/basePage";
 
 let browser: Browser;
 
@@ -26,6 +27,7 @@ Before(async function (this: CustomWorld) {
 
     this.baseDashboard = new BaseDashboard(this.page);
     this.baseIncident = new BaseIncident(this.page);
+    this.basePage = new BasePage(this.page);
 
     this.page.on("request", (req) => {
         if (req.url().includes("/overview")) {
