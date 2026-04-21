@@ -40,7 +40,6 @@ Feature: Incident Page
             | Indonesia | 2026-02-01 | 2026-04-05 |
 
 
-
     @Incidentdetailcustomrange
     Scenario Outline: Open incident and handle workflow
         When I perform actions:

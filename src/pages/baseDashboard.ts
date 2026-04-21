@@ -31,6 +31,8 @@ export class BaseDashboard {
     btnSelectFilter = (filtername: string) => this.page.locator(`xpath=(//div[@role="presentation"]//div[@role="option" and @tabindex="-1"]//span[@id="radix-:r366:" and normalize-space()="${filtername}"])`);
     btnfilter = (datatestid: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[@type="button" and @role="combobox"])`);
     btnFilterStatusModule = (status: string) => this.page.locator(`//button[.//*[normalize-space()='${status}']]`);
+    btntopservice = () => this.page.locator(`xpath=(//div[@data-testid="top-services-latency"]//div//button)`);
+    btnclose = () => this.page.locator(`xpath=(//button[.//span[text()='Close']])`);
     //#endregion
 
     //#region Actions
@@ -63,7 +65,16 @@ export class BaseDashboard {
             await this.clickstatus(status);
         }
     }
-
+    async clicktopservice(): Promise<void> {
+        const button = this.btntopservice();
+        await button.waitFor({ state: "visible", timeout: 10000 });
+        await button.click();
+    }
+    async clickbtnClose(): Promise<void> {
+        const button = this.btnclose();
+        await button.waitFor({ state: "visible", timeout: 10000 });
+        await button.click();
+    }
     //#endregion
 }
 

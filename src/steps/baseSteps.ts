@@ -1,7 +1,7 @@
 import { Given, When, Then, DataTable } from "@cucumber/cucumber";
-import { CustomWorld } from "../support/world";
+import { CustomWorld } from "../../support/world";
 import { expect, chromium, Page, Locator } from "@playwright/test";
-import { BaseDashboard } from "../pages/baseDashboard";
+import { BaseDashboard } from "../../pages/baseDashboard";
 //URL navigation
 Given("I am on dashboard", async function (this: CustomWorld) {
     await this.basePage.goto(this.config.baseUrl);
@@ -9,45 +9,73 @@ Given("I am on dashboard", async function (this: CustomWorld) {
 //  Lấy link login từ outlook
 When("I wait for magic link and navigate", { timeout: 120 * 10000 }, async function (this: CustomWorld) {
     const browser = await chromium.launch({ headless: false });
+
     try {
         const context = await browser.newContext({
             storageState: "outlook-auth.json",
         });
+
         const outlookPage = await context.newPage();
         await outlookPage.goto("https://outlook.office.com/mail");
-        await outlookPage.waitForSelector("div[role='main']", {
-            timeout: 60000,
-        });
-        await outlookPage.waitForTimeout(8000);
-        const emails = outlookPage.locator("span:has-text('login')");
-        const count = await emails.count();
-        if (count === 0) {
-            throw new Error("No login emails found");
-        }
-        const latestEmail = emails.nth(count - 1);
 
-        await latestEmail.scrollIntoViewIfNeeded();
-        await latestEmail.click();
-        const linkElement = outlookPage.locator("a:has-text('Log In')");
-        await linkElement.waitFor({ state: "visible", timeout: 30000 });
-        let magicLink = await linkElement.getAttribute("href");
+        await outlookPage.waitForSelector("div[role='main']", { timeout: 60000 });
+
+        let magicLink: string | null = null;
+
+        for (let i = 0; i < 12; i++) {
+            console.log(`🔁 Checking inbox attempt ${i + 1}`);
+
+            await outlookPage.reload();
+
+            // ✅ FIX: dùng role option
+            await outlookPage.waitForSelector("div[role='option']", { timeout: 20000 });
+
+            await outlookPage.waitForTimeout(5000);
+
+            const emails = outlookPage.locator("div[role='option']");
+            const count = await emails.count();
+
+            console.log("📊 Email count:", count);
+
+            for (let j = 0; j < count; j++) {
+                const email = emails.nth(j);
+
+                const text = await email.innerText();
+
+                console.log(`📧 Email ${j}:`, text);
+
+                if (!text.includes("Login to DVCS Ops Insights")) continue;
+
+                console.log("✅ Found login email");
+
+                await email.click();
+
+                await outlookPage.waitForSelector("text=We've received a login request");
+
+                const linkElement = outlookPage.locator("a:has-text('Log In')");
+                await linkElement.waitFor({ state: "visible", timeout: 30000 });
+
+                magicLink = await linkElement.getAttribute("href");
+                break;
+            }
+
+            if (magicLink) break;
+
+            console.log("⏳ Chưa có mail login...");
+            await outlookPage.waitForTimeout(5000);
+        }
 
         if (!magicLink) {
-            throw new Error("Cannot get magic link");
+            throw new Error("❌ Không tìm thấy magic link mới");
         }
-        magicLink = magicLink.trim();
 
-        console.log("MAGIC LINK:", magicLink);
-        await this.page.context().grantPermissions([]);
+        console.log("🔗 MAGIC LINK:", magicLink);
+
         await this.page.goto(magicLink, {
             waitUntil: "domcontentloaded",
         });
 
         await this.page.waitForLoadState("networkidle");
-        await this.page.waitForFunction(() => {
-            return window.location.href.includes("dashboard");
-        });
-        await this.page.waitForTimeout(2000);
     } finally {
         await browser.close();
     }
