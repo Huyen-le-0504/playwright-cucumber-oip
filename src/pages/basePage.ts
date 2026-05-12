@@ -29,6 +29,7 @@ export class BasePage {
     btnfilter = (datatestid: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[@type="button" and @role="combobox"])`);
     timerange = (timerange: string, datatestid: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[normalize-space()="${timerange}" and not(contains(@class,"hidden"))])`); //#endregion
     statusfilter = (status: string, timerange: string) => this.page.locator(`xpath=(//div[@data-testid="${status}"]//button[normalize-space()="${timerange}" and not(contains(@class,"hidden"))])`);
+
     //#region Actions
     // URL navigation
     async goto(url: string): Promise<void> {
@@ -89,7 +90,6 @@ export class BasePage {
         await option.waitFor({ state: "visible", timeout: 30000 });
         await option.click();
     }
-    //Chọn filter module theo status
 
     //#endregion
     //#region Actions

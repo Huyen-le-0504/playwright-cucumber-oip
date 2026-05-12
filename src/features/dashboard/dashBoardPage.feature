@@ -9,8 +9,8 @@ Feature: Dashboard Page
         And I click button to select tenant
 
 
-
-    @OverallAvailability
+    #Overall Availability
+    @verifyoverallavailabilitywithfilter
     Scenario: Overall Availability
         And I selects tenant "<tenant>"
         And I click filter "<filter>"
@@ -19,7 +19,18 @@ Feature: Dashboard Page
             | tenant    | option       | filter                       |
             | Indonesia | Yara Connect | overall-availability-section |
 
-    @latency
+    @verifyoverallavailabilitywithfilter
+    Scenario: Overall Availability with filter
+        And I selects tenant "<tenant>"
+        And I click filter "<filter>"
+        And I selects "<option>" option on filter
+        Examples:
+            | tenant    | option       | filter                       |
+            | Indonesia | Yara Connect | overall-availability-section |
+
+
+    #latency
+    @verifylatencywithfilter
     Scenario: Latency
         And I selects tenant "<tenant>"
         And I click filter "latency-section"
@@ -29,7 +40,15 @@ Feature: Dashboard Page
             | tenant | option       | timerange | datatestid      |
             | India  | Yara Connect | 30d       | latency-section |
 
-    @module
+    @verifytopservicelatencywithfilter
+    Scenario: Latency top service
+        And I selects tenant "India"
+        And I click view all services
+        And I click to close popup Services latency
+
+
+    #modules/submodules
+    @verifylistofmoduleswithfilter
     Scenario: Module
         And I selects tenant "<tenant>"
         And I click view all services
@@ -37,8 +56,39 @@ Feature: Dashboard Page
         And I select "<timerange>" timerange "<datatestid>"
         And I click status modules if they have value
         Examples:
-            | tenant | timerange | timerange | datatestid          |
-            | India  | 30d       | 24h       | last-results-filter |
+            | tenant | timerange | datatestid          |
+            | India  | 30d       | last-results-filter |
+
+    @verifyexpandorcollapsemodule
+    Scenario: Expand or collapse module
+        And I selects tenant "<tenant>"
+        And I click to collapse or expand project "<project>"
+        And I click to expand module "<module>"
+        Examples:
+            | tenant    | project       | module                   |
+            | Indonesia | Yara Farmcare | YC - Identity Management |
+
+    @verifysubmodulewithtimerange
+    Scenario: verify submodule with timerange
+        And I selects tenant "<tenant>"
+        And I click to expand module "<module>"
+        And I click "<submodule>" submodule
+        And I select "<timerange>" timerange "<datatestid>"
+        Examples:
+            | tenant   | module                 | submodule | timerange | datatestid          |
+            | Thailand | YFC - Campaign manager | Rewards   | 30d       | last-results-filter |
+
+    @verifysubmodulerunresults
+    Scenario: verify submodule run results
+        And I selects tenant "<tenant>"
+        And I click to expand module "<module>"
+        And I click "<submodule>" submodule
+        And I select "<timerange>" timerange "<datatestid>"
+        And I click "<runresult>" run result
+        And I click to expand run result at "<titleresult>"
+        Examples:
+            | tenant   | module                 | submodule | timerange | datatestid          | runresult | titleresult        |
+            | Thailand | YFC - Campaign manager | Rewards   | 30d       | last-results-filter | 2         | JSON API Response: |
 
 
 

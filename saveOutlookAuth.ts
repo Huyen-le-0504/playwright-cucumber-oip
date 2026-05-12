@@ -1,3 +1,4 @@
+//npx ts-node saveOutlookAuth.ts
 /// <reference types="node" />
 import { chromium } from "@playwright/test";
 

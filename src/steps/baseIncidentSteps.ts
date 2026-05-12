@@ -28,6 +28,16 @@ When("I click step {string} of workflow", async function (step: string) {
     await this.baseIncident.clickStepOfWorkflow(step);
     await this.page.waitForTimeout(2000);
 });
+//Click vào btn active của incident detail
+When("I click button {string} of OpenTelemetry", async function (btnactive: string) {
+    await this.baseIncident.clickButtonOfOpenTelemetry(btnactive);
+    await this.page.waitForTimeout(2000);
+});
+//input data vào general input field
+When("I add a comment {string} into general input field", async function (value: string) {
+    await this.baseIncident.fillInGeneralInputField(value);
+    await this.page.waitForTimeout(2000);
+});
 //Hàm điền vào table
 When("I perform actions:", async function (table: DataTable) {
     const rows = table.hashes();

@@ -33,6 +33,12 @@ export class BaseDashboard {
     btnFilterStatusModule = (status: string) => this.page.locator(`//button[.//*[normalize-space()='${status}']]`);
     btntopservice = () => this.page.locator(`xpath=(//div[@data-testid="top-services-latency"]//div//button)`);
     btnclose = () => this.page.locator(`xpath=(//button[.//span[text()='Close']])`);
+    expandModule = (expandmodule: string) => this.page.locator(`xpath=(//button[contains(.,'${expandmodule}')]//span[contains(.,'Sub-modules')])`);
+    collapseProject = (collapsemodule: string) => this.page.locator(`xpath=(//button[.//span[text()='${collapsemodule}']]//span[@data-state-icon='true'])`);
+    submodule = (submodule: string) => this.page.locator(`xpath=(//div[contains(@class,'flex items-center') and contains(@class,'text-sm')]//span[text()='${submodule}'])`);
+    runResult = (result: string) => this.page.locator(`xpath=(//div[contains(@class,'space-y-0')]//a)[${result}]`);
+    expandrunresult = (titleresult: string) => this.page.locator(`xpath=(//button[@aria-expanded='true' and .//h3[text()='${titleresult}']])`);
+    //#endregion
     //#endregion
 
     //#region Actions
@@ -75,6 +81,39 @@ export class BaseDashboard {
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
     }
+
+    //Click để expand module
+    async clickExpandModule(expandmodule: string): Promise<void> {
+        const button = this.expandModule(expandmodule);
+        await button.waitFor({ state: "visible", timeout: 10000 });
+        await button.click();
+    }
+
+    //Click để collapse module
+    async clickCollapseProject(collapsemodule: string): Promise<void> {
+        const button = this.collapseProject(collapsemodule);
+        await button.waitFor({ state: "visible", timeout: 10000 });
+        await button.click();
+    }
+    //click để chọn submodule
+    async clickSubmodule(submodule: string): Promise<void> {
+        const submoduleLocator = this.submodule(submodule);
+        await submoduleLocator.waitFor({ state: "visible", timeout: 10000 });
+        await submoduleLocator.click();
+    }
+    //Click để chọn run result của submodule
+    async clickRunResult(result: string): Promise<void> {
+        const runResultLocator = this.runResult(result);
+        await runResultLocator.waitFor({ state: "visible", timeout: 10000 });
+        await runResultLocator.click();
+    }
+    //Click để expand run result
+    async clickExpandRunResult(titleresult: string): Promise<void> {
+        const expandRunResultLocator = this.expandrunresult(titleresult);
+        await expandRunResultLocator.waitFor({ state: "visible", timeout: 10000 });
+        await expandRunResultLocator.click();
+    }
+
     //#endregion
 }
 

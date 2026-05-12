@@ -17,11 +17,11 @@ Feature: Incident Page
             | timerange | <range>   |
 
         Examples:
-            | tenant    | range |
-            | Indonesia | 1h    |
-            | Indonesia | 24h   |
-            | Indonesia | 7d    |
-            | Indonesia | 30d   |
+            | tenant   | range |
+            | Thailand | 1h    |
+            | Thailand | 24h   |
+            | Thailand | 7d    |
+            | Thailand | 30d   |
 
 
     @Incidentselectcustomrange
@@ -36,8 +36,8 @@ Feature: Incident Page
             | link      | Incident Detail |             |           |
 
         Examples:
-            | tenant    | startDate  | endDate    |
-            | Indonesia | 2026-02-01 | 2026-04-05 |
+            | tenant   | startDate  | endDate    |
+            | Thailand | 2026-02-01 | 2026-04-05 |
 
 
     @Incidentdetailcustomrange
@@ -55,8 +55,8 @@ Feature: Incident Page
             | step         | View            |             |           |       |
 
         Examples:
-            | tenant | startDate  | endDate    |
-            | India  | 2026-02-01 | 2026-04-05 |
+            | tenant   | startDate  | endDate    |
+            | Thailand | 2026-02-01 | 2026-04-05 |
 
     @Incidentdetailtimerange
     Scenario Outline: Open incident and handle workflow
@@ -66,13 +66,30 @@ Feature: Incident Page
             | combobox     | Tenant          |       |
             | option       | <tenant>        |       |
             | timerange    | <timerange>     |       |
-            | link         | Incident Detail | 2     |
+            | link         | Incident Detail | 3     |
             | priorityStep |                 |       |
             | step         | View more       |       |
             | step         | View            |       |
 
         Examples:
-            | tenant | timerange |
-            | India  | 30d       |
+            | tenant   | timerange |
+            | Thailand | 30d       |
+
+    @Incidentdetailaddcmt
+    Scenario Outline: Open incident detail and add comment
+        When I perform actions:
+            | action              | value           | index |
+            | tab                 | Incidents       |       |
+            | combobox            | Tenant          |       |
+            | option              | <tenant>        |       |
+            | timerange           | <timerange>     |       |
+            | link                | Incident Detail | 1     |
+            | openTelemetryButton | Add Comment     |       |
+            | addComment          | <addComment>    |       |
+            | confirmaddcoment    | Add Comment     |       |
+
+        Examples:
+            | tenant   | timerange | addComment      |
+            | Thailand | 30d       | test automation |
 
 

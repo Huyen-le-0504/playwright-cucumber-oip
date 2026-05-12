@@ -32,7 +32,6 @@ When("I click status modules if they have value", async function () {
             const freshContainer = this.page.locator(`//button[.//div[contains(text(),'${status}')]]`).first();
             await freshContainer.waitFor({ state: "visible", timeout: 2000 });
             await freshContainer.scrollIntoViewIfNeeded();
-
             await freshContainer.click();
             await this.page.waitForTimeout(2000);
         } else {
@@ -43,7 +42,33 @@ When("I click status modules if they have value", async function () {
 //view all service
 When("I click view all services", async function () {
     await this.baseDashboard.clicktopservice();
+    await this.page.waitForTimeout(2000);
 });
 When("I click to close popup Services latency", async function () {
     await this.baseDashboard.clickbtnClose();
+});
+//Click để expand module
+When("I click to expand module {string}", async function (expandmodule: string) {
+    await this.baseDashboard.clickExpandModule(expandmodule);
+    await this.page.waitForTimeout(2000);
+});
+//Click để collapse project
+When("I click to collapse or expand project {string}", async function (collapsemodule: string) {
+    await this.baseDashboard.clickCollapseProject(collapsemodule);
+    await this.page.waitForTimeout(2000);
+});
+//Click để chọn submodule
+When("I click {string} submodule", async function (submodule: string) {
+    await this.baseDashboard.clickSubmodule(submodule);
+    await this.page.waitForTimeout(2000);
+});
+//Click để chọn run result của submodule
+When("I click {string} run result", async function (result: string) {
+    await this.baseDashboard.clickRunResult(result);
+    await this.page.waitForTimeout(2000);
+});
+//Click để expand run result
+When("I click to expand run result at {string}", async function (titleresult: string) {
+    await this.baseDashboard.clickExpandRunResult(titleresult);
+    await this.page.waitForTimeout(2000);
 });

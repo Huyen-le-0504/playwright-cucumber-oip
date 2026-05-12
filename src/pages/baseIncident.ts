@@ -21,7 +21,7 @@ export class BaseIncident {
     //#region Locators
     menuItem = (item: string) => this.page.locator(`xpath=(//ul[@role="menu"]//li[@role="menuitem"]//span[contains(text(),"${item}")])`);
     btnByText = (text: string) => this.page.locator(`xpath=(//button[@type="submit" and normalize-space()="${text}"])`);
-    txtGeneralInputField = (name: string) => this.page.locator(`xpath=//input[@name='${name}']`);
+    txtGeneralInputField = () => this.page.locator(`xpath=(//div[contains(@class,'min-h-[110px]')]//textarea)`);
     btnBytenant = (tenant: string) => this.page.locator(`xpath=(.//div[@role="option" and .//span[text()='${tenant}']])`);
     btncombobox = (name: string) => this.page.locator(`xpath=(//button[@type="button" and @role="combobox"]//span[@style="pointer-events: none;"]//div[@class="flex items-center gap-2 pr-2"])`);
     tabmenu = (tab: string) => this.page.locator(`xpath=(//p[normalize-space()="${tab}"])`);
@@ -34,6 +34,9 @@ export class BaseIncident {
     linkByText = (text: string, int: number = 1) => this.page.locator(`xpath=(//a[normalize-space()="${text}"])[${int}]`);
     btnStep = (step: string) => this.page.locator(`xpath=(//button[.//div[contains(text(),'${step}')]])`);
     btnviewlog = (text: string) => this.page.locator(`xpath=((//button[normalize-space()="${text}"])[1])`);
+    btnAddComment = (btnactive: string) => this.page.locator(`xpath=(//div[contains(text(),"OpenTelemetry")]/following::button[contains(., "${btnactive}")][1])`);
+    btnConfirmAddComment = () => this.page.locator(`xpath=(//div[contains(@class,'flex items-center gap-4')]//button[normalize-space(.)='Add Comment'])`);
+    //#endregion
     //#endregion
     //#region Actions
     //Click link "Incident Detail"
@@ -194,13 +197,9 @@ export class BaseIncident {
     async performAction(action: string, value: string, startDate?: string, endDate?: string) {
         const actions: Record<string, () => Promise<void>> = {
             tab: async () => this.clictab(value),
-
             combobox: async () => this.clickButtonBycombobox(value),
-
             option: async () => this.selectOptionFromCombobox(value),
-
             timerange: async () => this.selectTimerange(value),
-
             custom: async () => this.clickCustomrange(value),
 
             dateRange: async () => {
@@ -214,6 +213,19 @@ export class BaseIncident {
             link: async () => this.clickLinkByText(value),
             priorityStep: async () => this.clickPriorityStep(),
             step: async () => this.clickButtonViewlog(value),
+            openTelemetryButton: async () => {
+                const btn = this.btnAddComment(value);
+                await btn.waitFor({ state: "visible" });
+                await btn.click();
+            },
+            addComment: async () => {
+                await this.fillInGeneralInputField(value);
+            },
+            confirmaddcoment: async () => {
+                const btn = this.btnConfirmAddComment();
+                await btn.waitFor({ state: "visible" });
+                await btn.click();
+            },
         };
 
         const fn = actions[action];
@@ -227,11 +239,17 @@ export class BaseIncident {
     //#endregion
     //#region Actions
     // Input email to login
-    async fillInGeneralInputField(nameOrId: string, value: string | null) {
+    async fillInGeneralInputField(value: string | null) {
         if (!value) return;
-        const input = this.txtGeneralInputField(nameOrId);
+        const input = this.txtGeneralInputField();
         await input.waitFor({ state: "visible" });
         await input.fill(value);
+    }
+    //Confirmto add comment to incident
+    async clickButtonConfirmAddComment(): Promise<void> {
+        const button = this.btnConfirmAddComment();
+        await button.waitFor({ state: "visible", timeout: 10000 });
+        await button.click();
     }
     //#endregion
 }

@@ -1,7 +1,7 @@
 import { Given, When, Then, DataTable } from "@cucumber/cucumber";
-import { CustomWorld } from "../../support/world";
+import { CustomWorld } from "../support/world";
 import { expect, chromium, Page, Locator } from "@playwright/test";
-import { BaseDashboard } from "../../pages/baseDashboard";
+import { BaseDashboard } from "../pages/baseDashboard";
 //URL navigation
 Given("I am on dashboard", async function (this: CustomWorld) {
     await this.basePage.goto(this.config.baseUrl);
