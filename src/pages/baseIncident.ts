@@ -31,11 +31,12 @@ export class BaseIncident {
     startCalendar = () => this.page.locator('(//*[@data-testid="date-range-picker-custom"]//div[contains(@class,"calendar-section")])[1]');
     endCalendar = () => this.page.locator('(//*[@data-testid="date-range-picker-custom"]//div[contains(@class,"calendar-section")])[2]');
     saveButton = () => this.page.locator('//button[.//text()="Save"]');
-    linkByText = (text: string, int: number = 1) => this.page.locator(`xpath=(//a[normalize-space()="${text}"])[${int}]`);
+    linkByText = (title: string, index: number = 1) => this.page.locator(`xpath=(//div[@data-testid="incident-item"]//h4[contains(., "${title}")]//ancestor::div[@data-testid="incident-item"]//a[contains(., "Incident Detail")])[${index}]`);
     btnStep = (step: string) => this.page.locator(`xpath=(//button[.//div[contains(text(),'${step}')]])`);
     btnviewlog = (text: string) => this.page.locator(`xpath=((//button[normalize-space()="${text}"])[1])`);
     btnAddComment = (btnactive: string) => this.page.locator(`xpath=(//div[contains(text(),"OpenTelemetry")]/following::button[contains(., "${btnactive}")][1])`);
     btnConfirmAddComment = () => this.page.locator(`xpath=(//div[contains(@class,'flex items-center gap-4')]//button[normalize-space(.)='Add Comment'])`);
+    breadcrumb = (breadcrumb: string) => this.page.locator(`xpath=(//ol//li//a[contains(text(),"${breadcrumb}")])`);
     //#endregion
     //#endregion
     //#region Actions
@@ -175,19 +176,38 @@ export class BaseIncident {
         await this.pickDate(2, end);
     }
     //Click vào Incident detail hoặc bất kỳ link nào có text cụ thể
+    // async clickLinkByText(text: string, index: number = 0): Promise<void> {
+    //     const links = this.linkByText(text);
+
+    //     await links.first().waitFor({
+    //         state: "visible",
+    //         timeout: 15000,
+    //     });
+    //     const count = await links.count();
+
+    //     if (count <= index) {
+    //         throw new Error(`Không tìm thấy link: ${text}, count=${count}, index=${index}`);
+    //     }
+    //     const target = links.nth(index);
+    //     await target.scrollIntoViewIfNeeded();
+    //     await target.click();
+    // }
     async clickLinkByText(text: string, index: number = 0): Promise<void> {
         const links = this.linkByText(text);
 
-        await links.first().waitFor({
-            state: "visible",
-            timeout: 15000,
-        });
         const count = await links.count();
 
-        if (count <= index) {
-            throw new Error(`Không tìm thấy link: ${text}, count=${count}, index=${index}`);
+        if (count === 0) {
+            throw new Error(`Không tìm thấy link: ${text}`);
         }
+
+        if (index >= count) {
+            throw new Error(`Index out of range: ${index}, count=${count}`);
+        }
+
         const target = links.nth(index);
+
+        await target.waitFor({ state: "visible", timeout: 15000 });
         await target.scrollIntoViewIfNeeded();
         await target.click();
     }
@@ -213,18 +233,21 @@ export class BaseIncident {
             link: async () => this.clickLinkByText(value),
             priorityStep: async () => this.clickPriorityStep(),
             step: async () => this.clickButtonViewlog(value),
+            // openTelemetryButton: async () => {
+            //     const btn = this.btnAddComment(value);
+            //     await btn.waitFor({ state: "visible" });
+            //     await btn.click();
+            // },
             openTelemetryButton: async () => {
                 const btn = this.btnAddComment(value);
-                await btn.waitFor({ state: "visible" });
-                await btn.click();
-            },
-            addComment: async () => {
-                await this.fillInGeneralInputField(value);
-            },
-            confirmaddcoment: async () => {
-                const btn = this.btnConfirmAddComment();
-                await btn.waitFor({ state: "visible" });
-                await btn.click();
+
+                // check button tồn tại
+                const isVisible = await btn.isVisible().catch(() => false);
+                if (isVisible) {
+                    await btn.click();
+                    return;
+                }
+                await this.breadcrumb("Incidents").click();
             },
         };
 

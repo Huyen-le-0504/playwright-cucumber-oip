@@ -92,4 +92,33 @@ Feature: Incident Page
             | tenant   | timerange | addComment      |
             | Thailand | 30d       | test automation |
 
+    @Incidentdetailmarkinprogress
+    Scenario Outline: Open incident detail and mark as in progress
+        When I perform actions:
+            | action              | value                                                        | index |
+            | tab                 | Incidents                                                    |       |
+            | combobox            | Tenant                                                       |       |
+            | option              | <tenant>                                                     |       |
+            | timerange           | <timerange>                                                  |       |
+            | link                | RequestListDealerOrders [SLOW] / YC - Dealer Ordering System | 1     |
+            | openTelemetryButton | Mark in Progress                                             |       |
+
+        Examples:
+            | tenant   | timerange |
+            | Thailand | 30d       |
+
+    @Incidentdetailmarkasresolved
+    Scenario Outline: Open incident detail and mark as resolved
+        When I perform actions:
+            | action              | value                                                        | index |
+            | tab                 | Incidents                                                    |       |
+            | combobox            | Tenant                                                       |       |
+            | option              | <tenant>                                                     |       |
+            | timerange           | <timerange>                                                  |       |
+            | link                | RequestListDealerOrders [SLOW] / YC - Dealer Ordering System | 1     |
+            | openTelemetryButton | Mark as Resolved                                             |       |
+
+        Examples:
+            | tenant   | timerange |
+            | Thailand | 30d       |
 
