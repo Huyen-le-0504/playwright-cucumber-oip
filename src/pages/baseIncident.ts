@@ -233,15 +233,8 @@ export class BaseIncident {
             link: async () => this.clickLinkByText(value),
             priorityStep: async () => this.clickPriorityStep(),
             step: async () => this.clickButtonViewlog(value),
-            // openTelemetryButton: async () => {
-            //     const btn = this.btnAddComment(value);
-            //     await btn.waitFor({ state: "visible" });
-            //     await btn.click();
-            // },
             openTelemetryButton: async () => {
                 const btn = this.btnAddComment(value);
-
-                // check button tồn tại
                 const isVisible = await btn.isVisible().catch(() => false);
                 if (isVisible) {
                     await btn.click();
