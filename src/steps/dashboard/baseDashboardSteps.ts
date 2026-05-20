@@ -1,17 +1,15 @@
-import { Given, When, Then, DataTable } from "@cucumber/cucumber";
-import { CustomWorld } from "../support/world";
-import { expect, chromium, Page, Locator } from "@playwright/test";
-import { BaseDashboard } from "../pages/baseDashboard";
+import { When } from "@cucumber/cucumber";
+
 //URL navigation
 //click status filter module
 When("I click status modules if they have value", async function () {
     const priority = ["PASSING MODULES", "DEGRADED MODULES", "FAILED MODULES"];
 
     for (const status of priority) {
-        console.log(`\n🔍 Checking: ${status}`);
+        console.log(`Checking: ${status}`);
         const container = this.page.locator(`//button[.//div[contains(text(),'${status}')]]`).first();
         if ((await container.count()) === 0) {
-            console.log(`❌ Not found: ${status}`);
+            console.log(`Not found: ${status}`);
             continue;
         }
 
@@ -28,46 +26,47 @@ When("I click status modules if they have value", async function () {
         const value = parseInt((valueText || "0").replace(/,/g, ""));
 
         if (value > 0) {
-            console.log(`✅ Click ${status} (${value})`);
+            console.log(`Click ${status} (${value})`);
             const freshContainer = this.page.locator(`//button[.//div[contains(text(),'${status}')]]`).first();
             await freshContainer.waitFor({ state: "visible", timeout: 2000 });
             await freshContainer.scrollIntoViewIfNeeded();
             await freshContainer.click();
             await this.page.waitForTimeout(2000);
         } else {
-            console.log(`⏭ Skip ${status} (${value})`);
+            console.log(`Skip ${status} (${value})`);
         }
     }
 });
-//view all service
+//View all service
 When("I click view all services", async function () {
     await this.baseDashboard.clicktopservice();
     await this.page.waitForTimeout(2000);
 });
+//Click to close popup Services latency
 When("I click to close popup Services latency", async function () {
     await this.baseDashboard.clickbtnClose();
 });
-//Click để expand module
+//Click to expand module
 When("I click to expand module {string}", async function (expandmodule: string) {
     await this.baseDashboard.clickExpandModule(expandmodule);
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(3000);
 });
-//Click để collapse project
+//Click to collapse project
 When("I click to collapse or expand project {string}", async function (collapsemodule: string) {
     await this.baseDashboard.clickCollapseProject(collapsemodule);
     await this.page.waitForTimeout(2000);
 });
-//Click để chọn submodule
+//Click to select submodule
 When("I click {string} submodule", async function (submodule: string) {
     await this.baseDashboard.clickSubmodule(submodule);
     await this.page.waitForTimeout(2000);
 });
-//Click để chọn run result của submodule
+//Click to select run result of submodule
 When("I click {string} run result", async function (result: string) {
     await this.baseDashboard.clickRunResult(result);
     await this.page.waitForTimeout(2000);
 });
-//Click để expand run result
+//Click to expand run result
 When("I click to expand run result at {string}", async function (titleresult: string) {
     await this.baseDashboard.clickExpandRunResult(titleresult);
     await this.page.waitForTimeout(2000);

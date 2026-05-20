@@ -1,9 +1,7 @@
-// file: dashboardWithMagicLink.ts
-import { chromium, Page, expect, Locator } from "playwright/test";
-import * as imaps from "imap-simple";
+import { Page, expect, Locator } from "playwright/test";
 import * as dotenv from "dotenv";
 
-dotenv.config(); // Load biến môi trường từ .env
+dotenv.config(); // Load environment variables from .env
 
 export class BasePage {
     static selectTenant(tenantName: string) {
@@ -19,17 +17,15 @@ export class BasePage {
     }
 
     //#region Locators
-    tabmenu = (tab: string) => this.page.locator(`xpath=(//p[normalize-space()="${tab}"])`);
     txtGeneralInputField = (name: string) => this.page.locator(`xpath=//input[@name='${name}']`);
-    optionByText = (selectId: string, optionText: string) => this.page.locator(`xpath=//select[@id='${selectId}']/option[normalize-space()='${optionText}']`);
-    btnBytenant = (tenant: string) => this.page.locator(`xpath=(.//div[@role="option" and .//span[text()='${tenant}']])`);
     btncombobox = (name: string) => this.page.locator(`xpath=(//button[@type="button" and @role="combobox"]//span[@style="pointer-events: none;"]//div[@class="flex items-center gap-2 pr-2"])`);
     btnByText = (text: string) => this.page.locator(`xpath=(//button[@type="submit" and normalize-space()="${text}"])`);
-    btnSelectFilter = (filtername: string) => this.page.locator(`xpath=(//div[@role="presentation"]//div[@role="option" and @tabindex="-1"]//span[@id="radix-:r366:" and normalize-space()="${filtername}"])`);
     btnfilter = (datatestid: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[@type="button" and @role="combobox"])`);
-    timerange = (timerange: string, datatestid: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[normalize-space()="${timerange}" and not(contains(@class,"hidden"))])`); //#endregion
-    statusfilter = (status: string, timerange: string) => this.page.locator(`xpath=(//div[@data-testid="${status}"]//button[normalize-space()="${timerange}" and not(contains(@class,"hidden"))])`);
-
+    timerange = (datatestid: string, timerange: string) => this.page.locator(`xpath=//div[@data-testid="${datatestid}"]//button[normalize-space()="${timerange}"]`);
+    clickbarchart = (barchart: string, barchartindex: number) => this.page.locator(`xpath=(//span[contains(.,'${barchart}')]/following::div[@data-state='closed' and contains(@class,'cursor-pointer')])[${barchartindex}]`);
+    selectboxfilter = (submodule: string, index: number, color: string) => this.page.locator(`xpath=//span[normalize-space()="${submodule}"]/ancestor::div[contains(@class,'items-center')]//div[contains(@class,'${color}')][${index}]`);
+    breadcrumb = (breadcrumb: string) => this.page.locator(`xpath=(//ol//li//a[contains(text(),"${breadcrumb}")])`);
+    //#endregion
     //#region Actions
     // URL navigation
     async goto(url: string): Promise<void> {
@@ -47,53 +43,52 @@ export class BasePage {
     }
     //#endregion
     //#region Actions
-    // Hàm click button dùng locator này
+    // Function to click button using this locator
     async clickButtonByText(text: string): Promise<void> {
         const button = this.btnByText(text);
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
     }
-    //Click để mở dropdown list chọn tenant
+    //Click to open dropdown list to select tenant
     async clickButtonBycombobox(text: string): Promise<void> {
         const button = this.btncombobox(text);
         await button.waitFor({ state: "visible", timeout: 5000 });
         await button.click();
     }
-    //Click để mở dropdown list chọn tenant
+    //Click to select incident detail
     async selectDropdownByText(selectId: string, optionText: string | null): Promise<void> {
         if (!optionText) return;
         const select = this.page.locator(`select#${selectId}`);
         await select.waitFor({ state: "visible" });
         await select.selectOption({ label: optionText });
     }
-    //Click để mở dropdown filter
+    //Click to open dropdown filter
     async clickFilter(datatestid: string): Promise<void> {
         const button = this.btnfilter(datatestid);
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
     }
-    //Chọn option trong dropdown filter
+    //Select option in dropdown filter
     async clickOptionFilter(option: string): Promise<void> {
         const opt = this.page.getByRole("option", { name: option });
         await opt.waitFor();
         await opt.click();
     }
-    //Chọn option tenant
+    //Select tenant option
     async selectOptionFromCombobox(optionText: string): Promise<void> {
         const option = this.page.locator(`text=${optionText}`);
         await option.waitFor({ state: "visible", timeout: 30000 });
         await option.click();
     }
-    //Chọn timerange
-    async selectTimerange(timerange: string, datatestid: string): Promise<void> {
-        const option = this.timerange(timerange, datatestid);
+    //Select time range
+    async selectTimerange(datatestid: string, timerange: string): Promise<void> {
+        const option = this.timerange(datatestid, timerange).first();
         await option.waitFor({ state: "visible", timeout: 30000 });
         await option.click();
     }
-
     //#endregion
     //#region Actions
-    //Điền email vao input để login
+    //Input email to textbox to login
     async fillInGeneralInputField(nameOrId: string, value: string | null) {
         if (!value) return;
         const input = this.txtGeneralInputField(nameOrId);
@@ -101,6 +96,44 @@ export class BasePage {
         await input.fill(value);
     }
     //#endregion
+    //#region Actions
+    //Click any barchart in dashboard by module name
+    async clickBarchart(barchart: string, barchartindex: number): Promise<void> {
+        const button = this.clickbarchart(barchart, barchartindex);
+        await button.waitFor({ state: "visible", timeout: 10000 });
+        await button.click();
+    }
+    //#endregion
+    // Locator theo màu + thứ tự
+    async clickStatusBoxByPriority(submodule: string, index: number): Promise<void> {
+        const colors = ["bg-[#D4F4EC]", "bg-[#FFEECC]", "bg-[#FDDDD3]"];
+        let hasClicked = false;
+        for (const [colorIndex, color] of colors.entries()) {
+            const box = this.selectboxfilter(submodule, index, color);
+            const isVisible = await box.isVisible().catch(() => false);
+            if (!isVisible) {
+                continue;
+            }
+            const className = await box.getAttribute("class");
+            const isDisabled = className?.includes("cursor-not-allowed") || className?.includes("opacity-50");
+            if (isDisabled) {
+                console.log(`Skip disabled status box: ${color}`);
+                if (colorIndex === colors.length - 1 && !hasClicked) {
+                    throw new Error("The last status box has no data.");
+                }
+                continue;
+            }
+            hasClicked = true;
+            await box.scrollIntoViewIfNeeded();
+            await box.click();
+            console.log(`Clicked status box with color: ${color}`);
+            await this.breadcrumb("Dashboard").click();
+            await this.page.waitForLoadState("networkidle");
+        }
+        if (!hasClicked) {
+            throw new Error(`No visible status box found for "${submodule}".`);
+        }
+    }
 }
 
 //#endregion

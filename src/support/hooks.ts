@@ -4,9 +4,9 @@ setDefaultTimeout(30 * 1000);
 import { Before, After, BeforeAll, AfterAll } from "@cucumber/cucumber";
 import { chromium, Browser } from "@playwright/test";
 import { CustomWorld } from "./world";
-import { BaseDashboard } from "../pages/baseDashboard";
-import { BaseIncident } from "../pages/baseIncident";
-import { BasePage } from "../pages/basePage";
+import { BaseDashboard } from "../pages/dashboard/baseDashboard";
+import { BaseIncident } from "../pages/incident/baseIncident";
+import { BasePage } from "../pages/dynamicLocator/basePage";
 
 let browser: Browser;
 
