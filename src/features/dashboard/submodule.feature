@@ -29,8 +29,8 @@ Feature: Module on Dashboard
         And I click to expand module "<module>"
         And I click barchart <barchartindex> in module or submodule "<barchart>"
         Examples:
-            | module                 | timerange | datatestid          | barchart | barchartindex |
-            | YFC - Campaign manager | 30d       | last-results-filter | Rewards  | 1             |
+            | module                | timerange | datatestid          | barchart                  | barchartindex |
+            | YC - Campaign manager | 30d       | last-results-filter | Campaign listing & detail | 1             |
 
     @verifysubmodulewhenclickboxstatus
     Scenario Outline: verify submodule when click status box

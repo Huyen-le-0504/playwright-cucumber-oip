@@ -18,7 +18,7 @@ export class BaseDashboard {
     }
 
     //#region Locators
-    btntopservice = () => this.page.locator(`xpath=(//div[@data-testid="top-services-latency"]//div//button)`);
+    btntopservice = (datatestid: string, text: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[text()="${text}"])`);
     btnclose = () => this.page.locator(`xpath=(//button[.//span[text()='Close']])`);
     expandModule = (expandmodule: string) => this.page.locator(`xpath=(//span[normalize-space()="${expandmodule}"]/ancestor::button//div[contains(@class,'cursor-pointer') and .//span[contains(.,'Sub-module')]])`);
     collapseProject = (collapsemodule: string) => this.page.locator(`xpath=(//button[.//span[text()='${collapsemodule}']]//span[@data-state-icon='true'])`);
@@ -53,8 +53,8 @@ export class BaseDashboard {
         }
     }
     //Click to open top service popup
-    async clicktopservice(): Promise<void> {
-        const button = this.btntopservice();
+    async clicktopservice(datatestid: string, text: string): Promise<void> {
+        const button = this.btntopservice(datatestid, text);
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
     }

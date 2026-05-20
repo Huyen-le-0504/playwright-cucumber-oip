@@ -21,7 +21,7 @@ export class BasePage {
     btncombobox = (name: string) => this.page.locator(`xpath=(//button[@type="button" and @role="combobox"]//span[@style="pointer-events: none;"]//div[@class="flex items-center gap-2 pr-2"])`);
     btnByText = (text: string) => this.page.locator(`xpath=(//button[@type="submit" and normalize-space()="${text}"])`);
     btnfilter = (datatestid: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[@type="button" and @role="combobox"])`);
-    timerange = (datatestid: string, timerange: string) => this.page.locator(`xpath=//div[@data-testid="${datatestid}"]//button[normalize-space()="${timerange}"]`);
+    timerange = (datatestid: string, timerange: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[normalize-space()="${timerange}"])[1]`);
     clickbarchart = (barchart: string, barchartindex: number) => this.page.locator(`xpath=(//span[contains(.,'${barchart}')]/following::div[@data-state='closed' and contains(@class,'cursor-pointer')])[${barchartindex}]`);
     selectboxfilter = (submodule: string, index: number, color: string) => this.page.locator(`xpath=//span[normalize-space()="${submodule}"]/ancestor::div[contains(@class,'items-center')]//div[contains(@class,'${color}')][${index}]`);
     breadcrumb = (breadcrumb: string) => this.page.locator(`xpath=(//ol//li//a[contains(text(),"${breadcrumb}")])`);
@@ -82,9 +82,9 @@ export class BasePage {
     }
     //Select time range
     async selectTimerange(datatestid: string, timerange: string): Promise<void> {
-        const option = this.timerange(datatestid, timerange).first();
-        await option.waitFor({ state: "visible", timeout: 30000 });
-        await option.click();
+        const option = this.timerange(datatestid, timerange);
+        await option.waitFor({ state: "visible", timeout: 15000 });
+        await option.click({ timeout: 15000 });
     }
     //#endregion
     //#region Actions

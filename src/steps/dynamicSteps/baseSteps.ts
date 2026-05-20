@@ -20,7 +20,7 @@ When("I selects {string} option on filter", async function (filtername: string) 
 });
 //Select timerange
 When("I select {string} timerange {string}", async function (timerange: string, datatestid: string) {
-    await this.basePage.selectTimerange(timerange, datatestid);
+    await this.basePage.selectTimerange(datatestid, timerange);
     await this.page.waitForTimeout(2000);
 });
 //Click barchart by module name

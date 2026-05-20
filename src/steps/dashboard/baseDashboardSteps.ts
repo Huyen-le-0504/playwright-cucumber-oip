@@ -38,8 +38,8 @@ When("I click status modules if they have value", async function () {
     }
 });
 //View all service
-When("I click view all services", async function () {
-    await this.baseDashboard.clicktopservice();
+When("From {string} I click {string}", async function (datatestid: string, text: string) {
+    await this.baseDashboard.clicktopservice(datatestid, text);
     await this.page.waitForTimeout(2000);
 });
 //Click to close popup Services latency

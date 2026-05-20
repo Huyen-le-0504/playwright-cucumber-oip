@@ -13,5 +13,8 @@ Feature: Latency on Dashboard
     @verifytopservicelatencywithfilter
     Scenario: Latency top service
         Given I login to system with tenant "Thailand"
-        And I click view all services
+        And From "<datatestid>" I click "<text>"
         And I click to close popup Services latency
+        Examples:
+            | datatestid      | text              |
+            | latency-section | View all services |

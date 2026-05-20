@@ -22,8 +22,8 @@ export class BaseIncident {
     tabmenu = (tab: string) => this.page.locator(`xpath=(//p[normalize-space()="${tab}"])`);
     customrange = () => this.page.locator(`xpath=(//div[@class="flex flex-1 flex-row items-center gap-2"]//button[@type="button"]//div[normalize-space()="Custom range"])`);
     saveButton = () => this.page.locator('//button[.//text()="Save"]');
-    btnviewlog = (text: string) => this.page.locator(`xpath=((//button[normalize-space()="${text}"])[1])`);
-    btnAddComment = (btnactive: string) => this.page.locator(`xpath=(//div[contains(text(),"OpenTelemetry")]/following::button[contains(., "${btnactive}")][1])`);
+    btnviewlog = (datatestid: string, text: string) => this.page.locator(`xpath=((//div[@data-testid="${datatestid}"]//button[normalize-space()="${text}"])[1])`);
+    btnAddComment = (btnactive: string) => this.page.locator(`xpath=(//div[contains(text(),"OpenTelemetry")]/following::button[contains(., "${btnactive}")])[1]`);
     btnConfirmAddComment = (confirmaddcomment: string) => this.page.locator(`xpath=(//div[contains(@class,'flex items-center gap-4')]//button[normalize-space(.)='${confirmaddcomment}'])`);
     //#endregion
     //#region Actions
@@ -87,8 +87,8 @@ export class BaseIncident {
         throw new Error("Không tìm thấy step error hoặc warn nào trong workflow");
     }
     //Click to view more log if log > 5 lines
-    async clickButtonViewlog(text: string): Promise<void> {
-        const button = this.btnviewlog(text);
+    async clickButtonViewlog(datatestid: string, text: string): Promise<void> {
+        const button = this.btnviewlog(datatestid, text);
         const count = await button.count();
         if (text === "View more") {
             if (count === 0) {
@@ -180,7 +180,7 @@ export class BaseIncident {
             },
             link: async () => this.clickLinkByIndex(parseInt(value)),
             priorityStep: async () => this.clickPriorityStep(),
-            step: async () => this.clickButtonViewlog(value),
+            step: async () => this.clickButtonViewlog(datatestid, value),
             openTelemetryButton: async () => {
                 const btn = this.btnAddComment(value);
 

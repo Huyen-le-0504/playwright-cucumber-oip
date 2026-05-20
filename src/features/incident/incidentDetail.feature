@@ -5,18 +5,15 @@ Feature: Incident Detail on Incident Page
     Scenario Outline: Open incident and handle workflow
         Given I login to system with tenant "India"
         When I perform actions:
-            | action       | value     | startDate   | endDate   |
-            | tab          | Incidents |             |           |
-            | custom       |           |             |           |
-            | dateRange    |           | <startDate> | <endDate> |
-            | link         | 3         |             |           |
-            | priorityStep |           |             |           |
-            | step         | View more |             |           |
-            | step         | View      |             |           |
+            | action       | value     | startDate  | endDate    | datatestid        |
+            | tab          | Incidents |            |            |                   |
+            | custom       |           |            |            |                   |
+            | dateRange    |           | 2026-02-01 | 2026-04-05 |                   |
+            | link         | 1         |            |            |                   |
+            | priorityStep |           |            |            |                   |
+            | step         | View more |            |            |                   |
+            | step         | View      |            |            | flow-step-log-row |
 
-        Examples:
-            | startDate  | endDate    |
-            | 2026-02-01 | 2026-04-05 |
 
     @Incidentdetailtimerange
     Scenario Outline: Open incident and handle workflow
@@ -25,10 +22,10 @@ Feature: Incident Detail on Incident Page
             | action       | value     | datatestid              |
             | tab          | Incidents |                         |
             | timerange    | 7d        | date-range-quick-filter |
-            | link         | 3         |                         |
+            | link         | 1         |                         |
             | priorityStep |           |                         |
             | step         | View more |                         |
-            | step         | View      |                         |
+            | step         | View      | flow-step-log-row       |
 
     @Incidentdetailaddcmt
     Scenario Outline: Open incident detail and add comment
@@ -61,5 +58,5 @@ Feature: Incident Detail on Incident Page
             | action              | value            | datatestid           |
             | tab                 | Incidents        |                      |
             | timerange           | 30d              | specific-user-filter |
-            | link                | 6                |                      |
+            | link                | 4                |                      |
             | openTelemetryButton | Mark as Resolved |                      |

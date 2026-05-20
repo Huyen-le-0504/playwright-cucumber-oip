@@ -4,9 +4,9 @@ Feature: Incident History on Incident Page
     Scenario Outline: Select timerange
         Given I login to system with tenant "Thailand"
         When I perform actions:
-            | action    | value     |
-            | tab       | Incidents |
-            | timerange | <range>   |
+            | action    | value     | datatestid              |
+            | tab       | Incidents |                         |
+            | timerange | <range>   | date-range-quick-filter |
 
         Examples:
             | range |
@@ -14,7 +14,6 @@ Feature: Incident History on Incident Page
             | 24h   |
             | 7d    |
             | 30d   |
-
 
     @Incidentselectcustomrange
     Scenario Outline: Select custom date range and open incident

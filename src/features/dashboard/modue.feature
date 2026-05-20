@@ -3,8 +3,6 @@ Feature: Module on Dashboard
     @verifylistofmoduleswithfilter
     Scenario: Module
         Given I login to system with tenant "Thailand"
-        And I click view all services
-        And I click to close popup Services latency
         And I select "<timerange>" timerange "<datatestid>"
         And I click status modules if they have value
         Examples:
