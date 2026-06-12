@@ -50,14 +50,10 @@ export class BaseIncident {
     //Click to view log warning or error step
     async clickPriorityStep(): Promise<void> {
         const steps = this.page.locator("div.flex.grow.items-center");
-
         await steps.first().waitFor({ state: "visible", timeout: 10000 });
-
         const total = await steps.count();
         console.log("Total steps:", total);
-
         let yellowCandidate: any = null;
-
         for (let i = 0; i < total; i++) {
             const step = steps.nth(i);
             const hasRed = await step.locator(".text-\\[\\#C2451E\\], .text-\\[\\#C2451E\\] *").count();
@@ -78,7 +74,7 @@ export class BaseIncident {
             await yellowCandidate.click();
             return;
         }
-        throw new Error("Không tìm thấy step error hoặc warn nào trong workflow");
+        throw new Error("No error or warning steps found in the workflow");
     }
     //Click to view more log if log > 5 lines
     async clickButtonViewlog(datatestid: string, text: string): Promise<void> {
@@ -118,13 +114,13 @@ export class BaseIncident {
             if (currentMonth === targetMonth) break;
             const isDisabled = await prevBtn.getAttribute("aria-disabled");
             if (isDisabled === "true") {
-                throw new Error(`Không thể về tháng: ${targetMonth}`);
+                throw new Error(`Cannot navigate to month: ${targetMonth}`);
             }
             await prevBtn.click();
         }
         const day = calendar.locator(`//*[@data-day="${date}" and not(@data-disabled="true")]`);
         if ((await day.count()) === 0) {
-            throw new Error(`Date ${date} không tồn tại hoặc bị disable`);
+            throw new Error(`Date ${date} does not exist or is disabled`);
         }
         await day.click();
     }
@@ -161,7 +157,7 @@ export class BaseIncident {
     async performAction(action: string, value: string, datatestid: string, startDate?: string, endDate?: string) {
         const actions: Record<string, () => Promise<void>> = {
             tab: async () => this.basePage.clictab(value),
-            combobox: async () => this.basePage.clickButtonBycombobox(value),
+            combobox: async () => this.basePage.clickButtonBycombobox(),
             option: async () => this.selectOptionFromCombobox(value),
             timerange: async () => this.basePage.selectTimerange(datatestid, value),
             custom: async () => this.clickCustomrange(value),
