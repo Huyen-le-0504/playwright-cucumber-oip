@@ -1,5 +1,4 @@
-import { When } from "@cucumber/cucumber";
-
+import { When, Then, Before } from "@cucumber/cucumber";
 //URL navigation
 //click status filter module
 When("I click status modules if they have value", async function () {
@@ -43,8 +42,8 @@ When("From {string} I click {string}", async function (datatestid: string, text:
     await this.page.waitForTimeout(2000);
 });
 //Click to close popup Services latency
-When("I click to close popup Services latency", async function () {
-    await this.baseDashboard.clickbtnClose();
+When("I click to {string} button to close popup Services latency", async function (btnclose: string) {
+    await this.baseDashboard.clickbtnClose(btnclose);
 });
 //Click to expand module
 When("I click to expand module {string}", async function (expandmodule: string) {
@@ -70,4 +69,21 @@ When("I click {string} run result", async function (result: string) {
 When("I click to expand run result at {string}", async function (titleresult: string) {
     await this.baseDashboard.clickExpandRunResult(titleresult);
     await this.page.waitForTimeout(2000);
+});
+//Click to expand list of service
+When("I click to expand list of service at {string}", async function (expandservice: string) {
+    await this.baseDashboard.clickExpandListOfService(expandservice);
+    await this.page.waitForTimeout(2000);
+});
+//Verify popup list of service
+Then("I verify popup is {string}", async function (state: string) {
+    await this.baseDashboard.verifyPopup(this.baseDashboard.popupService(), state as "open" | "closed");
+});
+//Verify UI Uptime values match with API response
+Then("I verify uptime for {string} matches API field {string}", async function (timeLabel: string, apiKey: string) {
+    await this.baseDashboard.verifyDynamicUptimeMatchesApi(timeLabel, apiKey);
+});
+//Verify UI Latency values match with API response
+Then("I verify both {string} and {string} latency metrics for {string} timerange on card {string} match API", async function (p95Label, p99Label, timerange, cardName) {
+    await this.baseDashboard.verifyAllLatencyMetrics(cardName, timerange);
 });

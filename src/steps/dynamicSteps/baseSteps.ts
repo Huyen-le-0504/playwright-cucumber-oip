@@ -74,9 +74,9 @@ Given("I login to system with tenant {string}", { timeout: 120 * 1000 }, async f
             await outlookPage.waitForTimeout(5000);
         }
         if (!magicLink) {
-            throw new Error("Cannot find magic link");
+            throw new Error("Cannot find login link");
         }
-        console.log("MAGIC LINK:", magicLink);
+        console.log("LOGIN LINK:", magicLink);
         await this.page.goto(magicLink, {
             waitUntil: "domcontentloaded",
         });
@@ -85,7 +85,7 @@ Given("I login to system with tenant {string}", { timeout: 120 * 1000 }, async f
         await outlookContext.close();
     }
     await this.page.waitForURL(`${process.env.BASE_URL}/en-us/dashboard?countryCode=gh`);
-    await this.basePage.clickButtonBycombobox("Tenant");
+    await this.basePage.clickButtonBycombobox();
     await this.basePage.selectOptionFromCombobox(tenant);
 });
 //Click status box by priority: GREEN → YELLOW → RED

@@ -4,7 +4,7 @@ import { config } from "../support/config";
 import { BaseDashboard } from "../pages/dashboard/baseDashboard";
 import { BaseIncident } from "../pages/incident/baseIncident";
 import { BasePage } from "../pages/dynamicLocator/basePage";
-
+import { BaseOverview } from "../pages/overview/baseOverview";
 export class CustomWorld extends World {
     browser!: Browser;
     context!: BrowserContext;
@@ -13,6 +13,7 @@ export class CustomWorld extends World {
     baseDashboard!: BaseDashboard;
     baseIncident!: BaseIncident;
     basePage!: BasePage;
+    baseOverview!: BaseOverview;
 
     config = config;
     accessToken: string | undefined;

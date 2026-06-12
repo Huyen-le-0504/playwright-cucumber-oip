@@ -1,5 +1,4 @@
-// file: dashboardWithMagicLink.ts
-import { chromium, Browser } from "playwright";
+import { Browser } from "playwright";
 import * as dotenv from "dotenv";
 
 dotenv.config();

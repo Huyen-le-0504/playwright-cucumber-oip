@@ -33,12 +33,6 @@ export class BaseIncident {
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
     }
-    //Click to select tab at menutab
-    async clictab(tabName: string): Promise<void> {
-        const button = this.tabmenu(tabName);
-        await button.waitFor({ state: "visible", timeout: 10000 });
-        await button.click();
-    }
 
     //Click to open custom range
     async clickCustomrange(datetime: string): Promise<void> {
@@ -166,7 +160,7 @@ export class BaseIncident {
     //Merge the data into a table
     async performAction(action: string, value: string, datatestid: string, startDate?: string, endDate?: string) {
         const actions: Record<string, () => Promise<void>> = {
-            tab: async () => this.clictab(value),
+            tab: async () => this.basePage.clictab(value),
             combobox: async () => this.basePage.clickButtonBycombobox(value),
             option: async () => this.selectOptionFromCombobox(value),
             timerange: async () => this.basePage.selectTimerange(datatestid, value),

@@ -18,13 +18,15 @@ export class BasePage {
 
     //#region Locators
     txtGeneralInputField = (name: string) => this.page.locator(`xpath=//input[@name='${name}']`);
-    btncombobox = (name: string) => this.page.locator(`xpath=(//button[@type="button" and @role="combobox"]//span[@style="pointer-events: none;"]//div[@class="flex items-center gap-2 pr-2"])`);
+    btncombobox = () => this.page.locator(`xpath=(//button[@type="button" and @role="combobox"]//span[@style="pointer-events: none;"]//div[@class="flex items-center gap-2 pr-2"])`);
     btnByText = (text: string) => this.page.locator(`xpath=(//button[@type="submit" and normalize-space()="${text}"])`);
     btnfilter = (datatestid: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[@type="button" and @role="combobox"])`);
     timerange = (datatestid: string, timerange: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[normalize-space()="${timerange}"])[1]`);
     clickbarchart = (barchart: string, barchartindex: number) => this.page.locator(`xpath=(//span[contains(.,'${barchart}')]/following::div[@data-state='closed' and contains(@class,'cursor-pointer')])[${barchartindex}]`);
     selectboxfilter = (submodule: string, index: number, color: string) => this.page.locator(`xpath=//span[normalize-space()="${submodule}"]/ancestor::div[contains(@class,'items-center')]//div[contains(@class,'${color}')][${index}]`);
     breadcrumb = (breadcrumb: string) => this.page.locator(`xpath=(//ol//li//a[contains(text(),"${breadcrumb}")])`);
+    tabmenu = (tab: string) => this.page.locator(`xpath=(//p[normalize-space()="${tab}"])`);
+    selectcheckbox = (checkbox: string) => this.page.locator(`xpath=(//span[normalize-space()='${checkbox}']/parent::*//button[@role='checkbox'])`);
     //#endregion
     //#region Actions
     // URL navigation
@@ -50,8 +52,8 @@ export class BasePage {
         await button.click();
     }
     //Click to open dropdown list to select tenant
-    async clickButtonBycombobox(text: string): Promise<void> {
-        const button = this.btncombobox(text);
+    async clickButtonBycombobox(): Promise<void> {
+        const button = this.btncombobox();
         await button.waitFor({ state: "visible", timeout: 5000 });
         await button.click();
     }
@@ -80,6 +82,19 @@ export class BasePage {
         await option.waitFor({ state: "visible", timeout: 30000 });
         await option.click();
     }
+    //Click to select checkbox in dropdown filter
+    async clickCheckbox(checkbox: string): Promise<void> {
+        const cb = this.selectcheckbox(checkbox);
+        await cb.waitFor({
+            state: "visible",
+            timeout: 10000,
+        });
+        await cb.scrollIntoViewIfNeeded();
+        await cb.click({
+            force: true,
+            timeout: 10000,
+        });
+    }
     //Select time range
     async selectTimerange(datatestid: string, timerange: string): Promise<void> {
         const option = this.timerange(datatestid, timerange);
@@ -103,8 +118,13 @@ export class BasePage {
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
     }
-    //#endregion
-    // Locator theo màu + thứ tự
+    //Click to select tab at menutab
+    async clictab(tabName: string): Promise<void> {
+        const button = this.tabmenu(tabName);
+        await button.waitFor({ state: "visible", timeout: 10000 });
+        await button.click();
+    }
+    //Locate element by color
     async clickStatusBoxByPriority(submodule: string, index: number): Promise<void> {
         const colors = ["bg-[#D4F4EC]", "bg-[#FFEECC]", "bg-[#FDDDD3]"];
         let hasClicked = false;
@@ -134,6 +154,7 @@ export class BasePage {
             throw new Error(`No visible status box found for "${submodule}".`);
         }
     }
+    //#endregion
 }
 
 //#endregion
