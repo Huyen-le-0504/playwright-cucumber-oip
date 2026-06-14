@@ -1,4 +1,4 @@
-import { Given, When } from "@cucumber/cucumber";
+import { Given, Then, When } from "@cucumber/cucumber";
 import { CustomWorld } from "../../support/world";
 
 // Fill input
@@ -23,13 +23,13 @@ When("I select {string} timerange {string}", async function (timerange: string, 
     await this.basePage.selectTimerange(datatestid, timerange);
     await this.page.waitForTimeout(2000);
 });
-//Click barchart by module name
-When("I click barchart {int} in module or submodule {string}", async function (barchartindex: Number, barchart: string) {
-    await this.basePage.clickBarchart(barchart, Number(barchartindex));
-    await this.page.waitForTimeout(3000);
+//Click to expand list of service
+When("I click to expand list of service at {string}", async function (expandservice: string) {
+    await this.basePage.clickExpandListOfService(expandservice);
+    await this.page.waitForTimeout(2000);
 });
 //function to Login with magic link
-Given("I login to system with tenant {string}", { timeout: 120 * 1000 }, async function (this: CustomWorld, tenant: string) {
+Given("I select tenant {string} when clicking {string}", { timeout: 120 * 1000 }, async function (this: CustomWorld, tenant: string, flag: string) {
     await this.basePage.goto(this.config.baseUrl);
     await this.basePage.fillInGeneralInputField("email", "huyen.le@yara.com");
     await this.basePage.clickButtonByText("Send login link");
@@ -70,7 +70,7 @@ Given("I login to system with tenant {string}", { timeout: 120 * 1000 }, async f
             if (magicLink) {
                 break;
             }
-            console.log("Chưa có mail login...");
+            console.log("Hasn't found login email...");
             await outlookPage.waitForTimeout(5000);
         }
         if (!magicLink) {
@@ -85,10 +85,18 @@ Given("I login to system with tenant {string}", { timeout: 120 * 1000 }, async f
         await outlookContext.close();
     }
     await this.page.waitForURL(`${process.env.BASE_URL}/en-us/dashboard?countryCode=gh`);
-    await this.basePage.clickButtonBycombobox();
+    await this.basePage.clickButtonBycombobox(flag);
     await this.basePage.selectOptionFromCombobox(tenant);
 });
 //Click status box by priority: GREEN → YELLOW → RED
-When("I click status box {int} in module or submodule {string}", async function (index: number, filtername: string) {
-    await this.basePage.clickStatusBoxByPriority(filtername, index);
+Then("I click status box with color {string} in module or submodule {string}", async function (color: string, filtername: string) {
+    await this.basePage.clickStatusBoxByColor(filtername, color);
+});
+//Verify the filter displays the number of selected countries
+Then("I verify country filter displays {string}", async function (expected: string) {
+    await this.basePage.verifyCountryFilter(expected);
+});
+//Verify UI when user click to Critical Issues
+Then("{string} card border turns blue", async function (cardName: string) {
+    await this.basePage.verifyOverviewCardSelected(cardName);
 });

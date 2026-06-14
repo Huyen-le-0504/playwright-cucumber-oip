@@ -43,22 +43,17 @@ export class BaseDashboard {
             await route.fulfill({ response });
         });
     }
-
     //#region Locators
+    statusBoxLocator = (status: string) => this.page.locator(`xpath=(//button[.//div[contains(text(),'${status}')]])[1]`);
+    statusValueLocator = (container: Locator) =>
+        container
+            .locator("xpath=.//div")
+            .filter({ hasText: /^[0-9,]+$/ })
+            .first();
     btntopservice = (datatestid: string, text: string) => this.page.locator(`xpath=(//div[@data-testid="${datatestid}"]//button[text()="${text}"])`);
     btnclose = (Close: string) => this.page.locator(`xpath=(//button[.//span[text()='${Close}']])`);
-    expandModule = (expandmodule: string) => this.page.locator(`xpath=(//span[normalize-space()="${expandmodule}"]/ancestor::button//span[contains(.,'Sub-module')])`);
-    collapseProject = (collapsemodule: string) => this.page.locator(`xpath=(//span[.="${collapsemodule}"]/preceding::span[@data-state-icon="true"][1])`);
-    submodule = (submodule: string) => this.page.locator(`xpath=(//div[contains(@class,'flex items-center') and contains(@class,'text-sm')]//span[text()='${submodule}'])`);
-    runResult = (result: string) => this.page.locator(`xpath=(//div[contains(@class,'space-y-0')]//a)[${result}]`);
-    expandRunresult = (titleresult: string) => this.page.locator(`xpath=(//button[@aria-expanded='true' and .//h3[text()='${titleresult}']])`);
-    expandService = (expandservice: string) => this.page.locator(`xpath=(//span[.="${expandservice}"]/../button)`);
     popupService = () => this.page.locator(`xpath=(//div[@role='dialog'])`);
     uptimeValueByTime = (timeLabel: string): Locator => this.page.locator('[data-testid="uptime-item"]', { hasText: timeLabel }).locator("span").last();
-    private getLatencyUiValue(cardTestId: string, percentile: string): Locator {
-        const pKey = percentile.includes("95") ? "95th" : "99th";
-        return this.page.locator(`xpath=//div[@data-testid="${cardTestId}"]//div[./span[text()='for ${pKey}']]/span[1]`);
-    }
     //#endregion
     //#region Actions
     //Check if the value is different from 0
@@ -76,14 +71,6 @@ export class BaseDashboard {
             console.log(`${status} has NO data → skip`);
         }
     }
-    //click In order of priority: PASSING MODULES → DEGRADED MODULES → FAILED MODULES
-    async clickModulesByPriority(): Promise<void> {
-        const priority = ["PASSING MODULES", "DEGRADED MODULES", "FAILED MODULES"];
-
-        for (const status of priority) {
-            await this.clickstatus(status);
-        }
-    }
     //Click to open top service popup
     async clicktopservice(datatestid: string, text: string): Promise<void> {
         const button = this.btntopservice(datatestid, text);
@@ -96,42 +83,6 @@ export class BaseDashboard {
         await button.waitFor({ state: "visible", timeout: 10000 });
         await button.click();
     }
-    //Click to expand module
-    async clickExpandModule(expandmodule: string): Promise<void> {
-        const button = this.expandModule(expandmodule);
-        await button.waitFor({ state: "visible", timeout: 10000 });
-        await button.click();
-    }
-    //Click to collapse module
-    async clickCollapseProject(collapsemodule: string): Promise<void> {
-        const button = this.collapseProject(collapsemodule);
-        await button.waitFor({ state: "visible", timeout: 10000 });
-        await button.click();
-    }
-    //click to select submodule
-    async clickSubmodule(submodule: string): Promise<void> {
-        const submoduleLocator = this.submodule(submodule);
-        await submoduleLocator.waitFor({ state: "visible", timeout: 10000 });
-        await submoduleLocator.click();
-    }
-    //Click to select run result of submodule
-    async clickRunResult(result: string): Promise<void> {
-        const runResultLocator = this.runResult(result);
-        await runResultLocator.waitFor({ state: "visible", timeout: 10000 });
-        await runResultLocator.click();
-    }
-    //Click to expand run result
-    async clickExpandRunResult(titleresult: string): Promise<void> {
-        const expandRunResultLocator = this.expandRunresult(titleresult);
-        await expandRunResultLocator.waitFor({ state: "visible", timeout: 10000 });
-        await expandRunResultLocator.click();
-    }
-    //Click to expand list of service
-    async clickExpandListOfService(expandservice: string): Promise<void> {
-        const expandListOfServiceLocator = this.expandService(expandservice);
-        await expandListOfServiceLocator.waitFor({ state: "visible", timeout: 10000 });
-        await expandListOfServiceLocator.click();
-    }
     //Verify popup list of service
     async verifyPopup(popupLocator: Locator, state: PopupState): Promise<void> {
         const isOpen = state === "open";
@@ -141,6 +92,28 @@ export class BaseDashboard {
             return;
         }
         await expect(popupLocator).toBeHidden();
+    }
+    //click status filter module
+    async getModuleValue(status: string): Promise<number> {
+        const box = this.statusBoxLocator(status);
+        try {
+            await box.waitFor({ state: "visible", timeout: 5000 });
+            const valueElement = this.statusValueLocator(box);
+            const valueText = await valueElement.textContent();
+            const cleanText = (valueText || "0").replace(/,/g, "").trim();
+            const result = parseInt(cleanText, 10);
+            return isNaN(result) ? 0 : result;
+        } catch (error) {
+            console.log(`[BasePage] Do not found value for: ${status}`);
+            return -1;
+        }
+    }
+    async clickModule(status: string): Promise<void> {
+        const box = this.statusBoxLocator(status);
+        await box.waitFor({ state: "visible", timeout: 5000 });
+        await box.scrollIntoViewIfNeeded();
+        await box.click();
+        console.log(`[BasePage] Clicked on: ${status}`);
     }
     //Verify Uptime UI values match with API response
     async verifyAllLatencyMetrics(meanlatency: string): Promise<void> {
@@ -155,13 +128,13 @@ export class BaseDashboard {
         const matchP99 = cardRawText.match(/([\d,.]+)\s*ms\s*for\s*99th/);
         const uiP95Num = parseFloat(matchP95 ? matchP95[1].replace(/[^0-9.]/g, "") : "0");
         const uiP99Num = parseFloat(matchP99 ? matchP99[1].replace(/[^0-9.]/g, "") : "0");
-        console.log(`\n📊 [LOG] SUMMARY METRICS COMPARISON`);
+        console.log(`\n[LOG] SUMMARY METRICS COMPARISON`);
         console.log(`| Metric | UI Value (ms) | API Value (ms) | Status |`);
         console.log(`|--------|---------------|----------------|--------|`);
         console.log(`| P95    | ${uiP95Num.toString().padStart(13, " ")} | ${apiP95Summary.toFixed(2).padStart(14, " ")} | ${Math.abs(uiP95Num - apiP95Summary) <= 2 ? "Pass ✅" : "Fail ❌"} |`);
         console.log(`| P99    | ${uiP99Num.toString().padStart(13, " ")} | ${apiP99Summary.toFixed(2).padStart(14, " ")} | ${Math.abs(uiP99Num - apiP99Summary) <= 2 ? "Pass ✅" : "Fail ❌"} |`);
         const timeSeries = actualBody?.timeSeries || [];
-        console.log(`\n📈 [LOG] TIME-SERIES DATA (API SOURCE)`);
+        console.log(`\n [LOG] TIME-SERIES DATA (API SOURCE)`);
         console.log(`| ID  | Date   | Time  | P95 API (ms) | P99 API (ms) |`);
         console.log(`|-----|--------|-------|--------------|--------------|`);
         for (let i = 0; i < timeSeries.length; i++) {

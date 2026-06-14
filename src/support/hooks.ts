@@ -5,9 +5,7 @@ import { Before, After, BeforeAll, AfterAll } from "@cucumber/cucumber";
 import { chromium, Browser } from "@playwright/test";
 import { CustomWorld } from "./world";
 import { BaseDashboard } from "../pages/dashboard/baseDashboard";
-import { BaseIncident } from "../pages/incident/baseIncident";
 import { BasePage } from "../pages/dynamicLocator/basePage";
-import { BaseOverview } from "../pages/overview/baseOverview";
 
 let browser: Browser;
 
@@ -27,15 +25,7 @@ Before(async function (this: CustomWorld) {
     this.page = await this.context.newPage();
 
     this.baseDashboard = new BaseDashboard(this.page);
-    this.baseIncident = new BaseIncident(this.page);
     this.basePage = new BasePage(this.page);
-    this.baseOverview = new BaseOverview(this.page);
-
-    this.page.on("request", (req) => {
-        if (req.url().includes("/overview")) {
-            console.log("HEADERS:", req.headers());
-        }
-    });
 });
 
 After(async function (this: CustomWorld) {
