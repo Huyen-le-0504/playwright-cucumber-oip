@@ -1,4 +1,4 @@
-/// <reference types="node" />
+///<reference types="node" />
 import { chromium } from "@playwright/test";
 
 (async () => {
@@ -8,7 +8,7 @@ import { chromium } from "@playwright/test";
 
     await page.goto("https://outlook.office.com");
 
-    console.log("👉 Login Outlook xong thì nhấn Enter...");
+    console.log("After logging in to Outlook, press Enter to continue...");
     await new Promise((resolve) => process.stdin.once("data", resolve));
 
     await context.storageState({ path: "outlook-auth.json" });

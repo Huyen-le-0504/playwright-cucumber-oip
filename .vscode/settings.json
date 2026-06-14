@@ -1,5 +1,5 @@
 {
-    "cucumberautocomplete.steps": "src/steps/*.ts",
+    "cucumberautocomplete.steps": "src/steps/**/*.ts",
     "cucumberautocomplete.syncfeatures": "src/features/**/*.feature",
     "cucumberautocomplete.strictGherkinCompletion": true,
     "cucumberautocomplete.smartSnippets": true,
@@ -7,7 +7,6 @@
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
     "editor.formatOnSave": true,
-    "eslint.format.enable": true,
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
